@@ -3,22 +3,38 @@
   <button (click)="view = 'list'">List</button>
 </div>
 
+<!-- Courses -->
 @if (view === 'grid') {
-<div>
-  <section class="grid">
-    @for (course of courses; track course.id) {
-    <app-course-card [course]="course"></app-course-card>
-    }
-  </section>
-</div>
+<section class="grid">
+  @for (course of pagedCourses; track course.id) {
+  <app-course-card [course]="course"></app-course-card>
+  }
+</section>
 }
 
 @if (view === 'list') {
-<div>
-  <section class="list">
-    @for (course of courses; track course.id) {
-    <app-course-card [course]="course"></app-course-card>
-    }
-  </section>
-</div>
+<section class="list">
+  @for (course of pagedCourses; track course.id) {
+  <app-course-card [course]="course"></app-course-card>
+  }
+</section>
+}
+
+<!-- Pagination controls -->
+@if (totalPages > 1) {
+<nav class="pagination">
+  <button (click)="goToPage(1)" [disabled]="page === 1"><<</button>
+  <button (click)="goToPage(page - 1)" [disabled]="page === 1">Prev</button>
+
+  @for (p of compactPages; track p) {
+  <button (click)="goToPage(p)" [class.notselected]="p !== page">
+    {{ p }}
+  </button>
+  }
+
+  <button (click)="goToPage(page + 1)" [disabled]="page === totalPages">Next</button>
+  <button (click)="goToPage(totalPages)" [disabled]="page === totalPages">>></button>
+</nav>
+
+
 }

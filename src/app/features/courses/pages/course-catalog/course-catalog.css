@@ -22,3 +22,20 @@
   border: 1px solid #ddd;
   padding: 12px;
 }
+
+.pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.pagination button[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.notselected{
+    color : rgb(117, 117, 117);
+}
