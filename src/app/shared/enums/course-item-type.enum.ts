@@ -1,4 +1,4 @@
-export enum CourseItemType {
+enum CourseItemType {
   LESSON = 'LESSON',
-  QUIZ = 'QUIZ',
+  QUIZ = 'QUIZ'
 }

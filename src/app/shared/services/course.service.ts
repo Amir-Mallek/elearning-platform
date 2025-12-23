@@ -1,14 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Course } from '../models/course.model';
-import { CourseLevel } from '../enums/course-level.enum';
 import { CourseItem } from '../models/course-item.model';
-import { CourseItemType } from '../enums/course-item-type.enum';
+import { Course } from '../models/course.model';
 import { Lesson } from '../models/lesson.model';
 import { Quiz } from '../models/quiz.model';
 
-@Injectable({
-  providedIn: 'root',
-})
 export class CourseService {
   getCourseDetails(courseId: string): Course {
     return {
