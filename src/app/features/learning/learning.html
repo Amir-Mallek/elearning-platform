@@ -1,0 +1,269 @@
+<div class="flex h-screen bg-gray-100">
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col">
+    <!-- Course Header -->
+    <div class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+      <h1 class="text-2xl font-bold text-gray-800">{{ course?.title }}</h1>
+      <p class="text-gray-600 mt-1">{{ course?.description }}</p>
+    </div>
+
+    <!-- Video Player / Content Area -->
+    <div class="flex-1 bg-black flex items-center justify-center p-6">
+      <!-- Lesson Video -->
+      @if (currentItem && isLesson(currentItem)) {
+      <div class="w-full max-w-5xl">
+        <video class="w-full rounded-lg shadow-2xl" controls controlsList="nodownload">
+          <source
+            src="https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8"
+            type="application/x-mpegURL"
+          />
+          Your browser does not support the video tag.
+        </video>
+
+        <div class="mt-6 text-white">
+          <h2 class="text-2xl font-semibold">{{ currentItem.title }}</h2>
+          <p class="text-gray-300 mt-2">{{ currentItem.text }}</p>
+        </div>
+      </div>
+      }
+
+      <!-- Quiz Content -->
+      @if (currentItem && isQuiz(currentItem)) {
+      <div class="w-full max-w-3xl bg-white rounded-lg p-8">
+        <div class="flex items-center mb-6">
+          <svg
+            class="w-8 h-8 text-indigo-600 mr-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            ></path>
+          </svg>
+          <h2 class="text-2xl font-bold text-gray-800">Quiz</h2>
+        </div>
+        <p class="text-gray-600">This quiz contains {{ currentItem.questionCount }} questions.</p>
+        <button
+          class="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          Start Quiz
+        </button>
+      </div>
+      }
+    </div>
+
+    <!-- Controls Bar -->
+    <div class="bg-white border-t border-gray-200 px-6 py-4">
+      <div class="flex items-center justify-between max-w-5xl mx-auto">
+        <!-- Previous Button -->
+        <button
+          (click)="goToPreviousItem()"
+          [disabled]="!hasPrevious"
+          [class.opacity-50]="!hasPrevious"
+          [class.cursor-not-allowed]="!hasPrevious"
+          class="flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:hover:bg-gray-200"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            ></path>
+          </svg>
+          Previous
+        </button>
+
+        <!-- Mark Complete Button -->
+        @if (currentItem && isLesson(currentItem)) {
+        <button
+          (click)="markAsComplete()"
+          class="flex items-center px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            ></path>
+          </svg>
+          Mark as Complete
+        </button>
+        } @else if (currentItem && isQuiz(currentItem)) {
+        <div class="flex items-center text-green-600 font-semibold">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          Completed
+        </div>
+        }
+
+        <!-- Next Button -->
+        <button
+          (click)="goToNextItem()"
+          [disabled]="!hasNext"
+          [class.opacity-50]="!hasNext"
+          [class.cursor-not-allowed]="!hasNext"
+          class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:hover:bg-indigo-600"
+        >
+          Next
+          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="w-96 bg-white border-l border-gray-200 flex flex-col">
+    <!-- Progress Section -->
+    <div class="p-6 border-b border-gray-200">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold text-gray-700">Course Progress</span>
+        <span class="text-sm font-bold text-indigo-600">{{ progressPercentage }}%</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-3">
+        <div
+          class="bg-indigo-600 h-3 rounded-full transition-all duration-500"
+          [style.width.%]="progressPercentage"
+        ></div>
+      </div>
+      <p class="text-xs text-gray-500 mt-2">
+        {{ completedItems.size }} of {{ courseItems.length }} items completed
+      </p>
+    </div>
+
+    <!-- Course Items List -->
+    <div class="flex-1 overflow-y-auto">
+      <div class="p-4">
+        <h3 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+          Course Content
+        </h3>
+
+        <div class="space-y-2">
+          @for (item of courseItems; track item.id; let i = $index) {
+          <div
+            (click)="selectItem(i)"
+            [class.bg-indigo-50]="currentItem?.id === item.id"
+            [class.border-indigo-600]="currentItem?.id === item.id"
+            class="p-3 rounded-lg border-2 border-transparent hover:bg-gray-50 cursor-pointer transition-colors"
+          >
+            <div class="flex items-start">
+              <!-- Icon -->
+              <div class="flex-shrink-0 mr-3 mt-1">
+                <!-- Lesson Icon -->
+                @if (isLesson(item)) {
+                <svg
+                  class="w-5 h-5 text-indigo-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                  ></path>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+                }
+
+                <!-- Quiz Icon -->
+                @if (isQuiz(item)) {
+                <svg
+                  class="w-5 h-5 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                  ></path>
+                </svg>
+                }
+              </div>
+
+              <!-- Content -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-sm font-medium text-gray-800 truncate">
+                    @if (isLesson(item)) {
+                    <span>{{ item.title }}</span>
+                    } @else if (isQuiz(item)) {
+                    <span>Quiz {{ i + 1 }}</span>
+                    }
+                  </h4>
+
+                  <!-- Checkmark for completed -->
+                  @if (isItemCompleted(item.id)) {
+                  <svg
+                    class="w-5 h-5 text-green-600 flex-shrink-0 ml-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  }
+                </div>
+
+                <p class="text-xs text-gray-500 mt-1">
+                  @if (isLesson(item)) {
+                  <span>
+                    <span class="inline-flex items-center">
+                      <svg
+                        class="w-3 h-3 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                      </svg>
+                      {{ formatDuration(item.duration) }}
+                    </span>
+                  </span>
+                  } @else if (isQuiz(item)) {
+                  <span> {{ item.questionCount }} questions </span>
+                  }
+                </p>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
