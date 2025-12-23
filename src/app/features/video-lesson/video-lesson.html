@@ -1,0 +1,40 @@
+@if (lesson) {
+<div>
+  <video class="w-full rounded-lg max-w-7xl" controls controlsList="nodownload">
+    <source
+      src="https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8"
+      type="application/x-mpegURL"
+    />
+    Your browser does not support the video tag.
+  </video>
+
+  <div class="mt-6 text-white">
+    <h2 class="text-2xl font-semibold text-gray-800">{{ lesson.title }}</h2>
+    <p class="text-gray-600 mt-2">{{ lesson.text }}</p>
+  </div>
+</div>
+} @else {
+<div
+  class="w-full max-w-7xl mx-auto rounded-lg border border-dashed border-gray-300 bg-gray-50 h-105 flex flex-col items-center justify-center text-center p-6"
+>
+  <svg
+    class="w-14 h-14 text-gray-400 mb-4"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    viewBox="0 0 24 24"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h9a2.25 2.25 0 002.25-2.25V12"
+    />
+    <path stroke-linecap="round" stroke-linejoin="round" d="M18 9l-6 6m0 0l-6-6m6 6V3" />
+  </svg>
+
+  <h3 class="text-lg font-semibold text-gray-700">No lesson selected</h3>
+  <p class="text-gray-500 mt-2 max-w-md">
+    Select a lesson from the sidebar to start watching and continue your learning.
+  </p>
+</div>
+}

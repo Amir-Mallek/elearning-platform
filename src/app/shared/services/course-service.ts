@@ -53,7 +53,20 @@ export class CourseService {
         courseId,
         order: 3,
         type: CourseItemType.QUIZ,
-        questions: [],
+        questions: [
+          {
+            text: 'What is Angular?',
+            options: ['Option A', 'Option B', 'Option C'],
+            answer: [0, 2],
+            requireAll: false,
+          },
+          {
+            text: 'What is PHP?',
+            options: ['Option A', 'Option B', 'Option C'],
+            answer: [0],
+            requireAll: true,
+          },
+        ],
         questionCount: 5,
       } as Quiz,
 
@@ -72,7 +85,32 @@ export class CourseService {
         courseId,
         order: 5,
         type: CourseItemType.QUIZ,
-        questions: [],
+        questions: [
+          {
+            text: 'What is Angular?',
+            options: ['Option A', 'Option B', 'Option C'],
+            answer: [0, 2],
+            requireAll: false,
+          },
+          {
+            text: 'What is PHP?',
+            options: ['Option A', 'Option B', 'Option C'],
+            answer: [0],
+            requireAll: true,
+          },
+          {
+            text: 'What is Angular?',
+            options: ['Option A', 'Option B', 'Option C'],
+            answer: [0, 2],
+            requireAll: false,
+          },
+          {
+            text: 'What is PHP?',
+            options: ['Option A', 'Option B', 'Option C'],
+            answer: [0],
+            requireAll: true,
+          },
+        ],
         questionCount: 10,
       } as Quiz,
     ];

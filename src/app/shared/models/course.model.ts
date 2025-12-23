@@ -1,3 +1,5 @@
+import { CourseLevel } from '../enums/course-level.enum';
+
 export interface Course {
   id: string;
   title: string;

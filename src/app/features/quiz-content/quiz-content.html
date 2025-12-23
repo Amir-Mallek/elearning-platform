@@ -1,0 +1,356 @@
+<div class="max-w-4xl mx-auto p-6">
+  <!-- NOT STARTED STATE -->
+  @switch (quizState) { @case (QuizState.NOT_STARTED) {
+  <div class="text-center py-12">
+    <div class="inline-flex items-center justify-center w-20 h-20 bg-purple-100 rounded-full mb-6">
+      <svg class="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+        ></path>
+      </svg>
+    </div>
+
+    <h2 class="text-3xl font-bold text-gray-800 mb-4">Ready to Test Your Knowledge?</h2>
+    <p class="text-gray-600 mb-2">
+      This quiz contains <strong>{{ totalQuestions }}</strong> questions
+    </p>
+    <p class="text-sm text-gray-500 mb-8">You must answer all questions correctly to pass</p>
+
+    <button
+      (click)="startQuiz()"
+      class="px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors shadow-lg"
+    >
+      Start Quiz
+    </button>
+  </div>
+  } @case (QuizState.IN_PROGRESS) {
+  <div>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">Quiz in Progress</h2>
+        <span class="text-sm text-gray-500">{{ totalQuestions }} Questions</span>
+      </div>
+
+      <div class="w-full bg-gray-200 rounded-full h-2">
+        <div
+          class="bg-purple-600 h-2 rounded-full transition-all"
+          [style.width.%]="completenessPercentage()"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Questions List -->
+    <div class="space-y-6 mb-8">
+      @for (question of quiz.questions; track question; let i = $index) {
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-start mb-4">
+          <span
+            class="shrink-0 w-8 h-8 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center font-semibold text-sm mr-3"
+          >
+            {{ i + 1 }}
+          </span>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ question.text }}</h3>
+            <p class="text-xs text-gray-500">
+              {{
+                getQuestionType(question) === 'single'
+                  ? 'Select one answer'
+                  : 'Select all that apply'
+              }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Options -->
+        <div class="space-y-2 ml-11">
+          @for (option of question.options; track option; let j = $index) {
+          <div
+            (click)="toggleAnswer(i, j)"
+            [class.border-purple-600]="isAnswerSelected(i, j)"
+            [class.bg-purple-50]="isAnswerSelected(i, j)"
+            class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-300 transition-colors"
+          >
+            <div class="flex items-center">
+              <!-- Checkbox/Radio Icon -->
+              <div
+                class="shrink-0 w-5 h-5 mr-3 border-2 rounded flex items-center justify-center"
+                [class.border-purple-600]="isAnswerSelected(i, j)"
+                [class.bg-purple-600]="isAnswerSelected(i, j)"
+                [class.border-gray-300]="!isAnswerSelected(i, j)"
+                [class.rounded-full]="getQuestionType(question) === 'single'"
+              >
+                @if (isAnswerSelected(i, j)) {
+                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                }
+              </div>
+
+              <span class="text-gray-700" [class.font-semibold]="isAnswerSelected(i, j)">
+                {{ option }}
+              </span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Grade Button -->
+    <div class="sticky bottom-0 bg-white border-t border-gray-200 py-4 -mx-6 px-6">
+      <button
+        (click)="gradeQuiz()"
+        [disabled]="!canGrade()"
+        [class.opacity-50]="!canGrade()"
+        [class.cursor-not-allowed]="!canGrade()"
+        class="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:hover:bg-indigo-600"
+      >
+        Grade Quiz
+      </button>
+      @if (!canGrade()) {
+      <p class="text-xs text-center text-gray-500 mt-2">
+        Please answer all questions before grading
+      </p>
+      }
+    </div>
+  </div>
+  } @case (QuizState.GRADED) {
+  <div>
+    <!-- Results Card -->
+    <div
+      class="bg-white rounded-lg shadow-lg border-2 p-8 mb-6 text-center"
+      [class.border-green-500]="isPerfectScore()"
+      [class.border-red-500]="!isPerfectScore()"
+    >
+      <div
+        class="inline-flex items-center justify-center w-20 h-20 rounded-full mb-6"
+        [class.bg-green-100]="isPerfectScore()"
+        [class.bg-red-100]="!isPerfectScore()"
+      >
+        <!-- Success Icon -->
+        @if (isPerfectScore()) {
+        <svg class="w-10 h-10 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        } @else {
+        <!-- Fail Icon -->
+        <svg class="w-10 h-10 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        }
+      </div>
+
+      <h2
+        class="text-3xl font-bold mb-2"
+        [class.text-green-600]="isPerfectScore()"
+        [class.text-red-600]="!isPerfectScore()"
+      >
+        {{ isPerfectScore() ? 'Perfect Score!' : 'Quiz Complete' }}
+      </h2>
+
+      <p class="text-gray-600 mb-6">
+        You scored <strong class="text-2xl">{{ score }}</strong> out of
+        <strong class="text-2xl">{{ totalQuestions }}</strong>
+      </p>
+
+      <div class="w-full max-w-xs mx-auto bg-gray-200 rounded-full h-3 mb-6">
+        <div
+          class="h-3 rounded-full transition-all"
+          [class.bg-green-600]="isPerfectScore()"
+          [class.bg-red-600]="!isPerfectScore()"
+          [style.width.%]="scorePercentage"
+        ></div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <!-- Show Answers Button (always available) -->
+        <button
+          (click)="showAnswers()"
+          class="px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors"
+        >
+          Show Answers
+        </button>
+
+        <!-- Retake Button (always available) -->
+        <button
+          (click)="retakeQuiz()"
+          class="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors"
+        >
+          Retake Quiz
+        </button>
+
+        <!-- Next Button (only if perfect score) -->
+        @if (isPerfectScore()) {
+        <button
+          (click)="goToNextItem()"
+          class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+        >
+          Next Lesson →
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Quick Results Summary -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h3 class="font-semibold text-gray-800 mb-4">Results Summary</h3>
+      <div class="space-y-2">
+        @for (attempt of attempts; track attempt; let i = $index) {
+        <div
+          class="flex items-center justify-between p-3 rounded-lg"
+          [class.bg-green-50]="attempt.isCorrect"
+          [class.bg-red-50]="!attempt.isCorrect"
+        >
+          <span class="text-sm text-gray-700">Question {{ i + 1 }}</span>
+
+          <div class="flex items-center">
+            @if (attempt.isCorrect) {
+            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            } @else {
+            <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            }
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  } @case (QuizState.SHOWING_ANSWERS) {
+  <div>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">Answer Key</h2>
+      <p class="text-gray-600">Review the correct answers below</p>
+    </div>
+
+    <!-- Questions with Answers -->
+    <div class="space-y-6 mb-8">
+      @for (question of quiz.questions; track question; let i = $index) {
+      <div
+        class="bg-white rounded-lg shadow-sm border-2 p-6"
+        [class.border-green-200]="attempts[i].isCorrect"
+        [class.border-red-200]="!attempts[i].isCorrect"
+      >
+        <div class="flex items-start mb-4">
+          <span
+            class="shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm mr-3"
+            [class.bg-green-100]="attempts[i].isCorrect"
+            [class.text-green-600]="attempts[i].isCorrect"
+            [class.bg-red-100]="!attempts[i].isCorrect"
+            [class.text-red-600]="!attempts[i].isCorrect"
+          >
+            {{ i + 1 }}
+          </span>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-semibold text-gray-800">{{ question.text }}</h3>
+              <span
+                class="text-sm font-semibold"
+                [class.text-green-600]="attempts[i].isCorrect"
+                [class.text-red-600]="!attempts[i].isCorrect"
+              >
+                {{ attempts[i].isCorrect ? 'Correct' : 'Incorrect' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Options with Answer Key -->
+        <div class="space-y-2 ml-11">
+          @for (option of question.options; track option; let j = $index) {
+          <div
+            class="p-4 border-2 rounded-lg"
+            [class.border-green-500]="isCorrectAnswer(i, j)"
+            [class.bg-green-50]="isCorrectAnswer(i, j)"
+            [class.border-red-500]="isAnswerSelected(i, j) && !isCorrectAnswer(i, j)"
+            [class.bg-red-50]="isAnswerSelected(i, j) && !isCorrectAnswer(i, j)"
+            [class.border-gray-200]="!isCorrectAnswer(i, j) && !isAnswerSelected(i, j)"
+            [class.bg-gray-50]="!isCorrectAnswer(i, j) && !isAnswerSelected(i, j)"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-gray-700">{{ option }}</span>
+
+              <!-- Correct Answer Badge -->
+              @if (isCorrectAnswer(i, j)) {
+              <span class="text-xs font-semibold text-green-600 flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                Correct
+              </span>
+              } @else if (isAnswerSelected(i, j)) {
+              <!-- Your Answer Badge (if wrong) -->
+              <span class="text-xs font-semibold text-red-600 flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                Your Answer
+              </span>
+              }
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="sticky bottom-0 bg-white border-t border-gray-200 py-4 -mx-6 px-6">
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button
+          (click)="retakeQuiz()"
+          class="flex-1 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors"
+        >
+          Retake Quiz
+        </button>
+
+        @if (isPerfectScore()) {
+        <button
+          (click)="goToNextItem()"
+          class="flex-1 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+        >
+          Continue to Next Lesson →
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+  } }
+</div>

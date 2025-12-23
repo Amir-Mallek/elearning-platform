@@ -5,15 +5,17 @@ import { Course } from '../../shared/models/course.model';
 import { Quiz } from '../../shared/models/quiz.model';
 import { CourseItemType } from '../../shared/enums/course-item-type.enum';
 import { CourseService } from '../../shared/services/course-service';
+import { VideoLesson } from '../video-lesson/video-lesson';
+import { QuizContent } from '../quiz-content/quiz-content';
 
 @Component({
   selector: 'app-learning',
-  imports: [],
+  imports: [VideoLesson, QuizContent],
   templateUrl: './learning.html',
   styleUrl: './learning.css',
 })
 export class Learning {
-  @Input() course: Course | null = null;
+  @Input() course!: Course;
   courseItems: CourseItem[] = [];
   currentItem: CourseItem | null = null;
   currentIndex: number = 0;
@@ -21,13 +23,11 @@ export class Learning {
   courseService = inject(CourseService);
 
   ngOnInit(): void {
-    if (this.course) {
-      this.loadCourse();
-    }
+    this.loadCourse();
   }
 
   loadCourse(): void {
-    this.courseItems = this.courseService.getCourseItems(this.course?.id || '');
+    this.courseItems = this.courseService.getCourseItems(this.course.id);
 
     // Load completed items from enrollment (mock for now)
     // In real implementation, get this from enrollment service
