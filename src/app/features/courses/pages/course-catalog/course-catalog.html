@@ -1,0 +1,24 @@
+<div class="toolbar">
+  <button (click)="view = 'grid'">Grid</button>
+  <button (click)="view = 'list'">List</button>
+</div>
+
+@if (view === 'grid') {
+<div>
+  <section class="grid">
+    @for (course of courses; track course.id) {
+    <app-course-card [course]="course"></app-course-card>
+    }
+  </section>
+</div>
+}
+
+@if (view === 'list') {
+<div>
+  <section class="list">
+    @for (course of courses; track course.id) {
+    <app-course-card [course]="course"></app-course-card>
+    }
+  </section>
+</div>
+}
