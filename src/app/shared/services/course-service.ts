@@ -23,6 +23,47 @@ export class CourseService {
       lessonsCount: 10,
       quizCount: 2,
       category: 'Programming',
+      instructor: {
+        id: 'instructor123',
+        name: 'John Doe',
+        bio: 'Experienced software developer and instructor.',
+        title: 'Senior    Developer',
+        avatar : 'path/to/instructor-avatar.jpg',
+        coursesCount : 5,
+        studentsCount : 2000,
+        rating : 4.7
+      },
+      thumbnail: 'path/to/course-thumbnail.jpg',
+      enrolledCount: 1200,
+      language : 'English',
+      lastUpdated: '2024-01-15',
+      learningObjectives: [
+        'Understand core programming concepts',
+        'Build web applications',
+        'Work with databases',
+      ],
+      prerequisites: [
+        'Basic understanding of programming',
+        'Familiarity with web technologies',
+      ],
+      modules: [{
+        id: 'module-1',
+        title: 'Introduction to Programming',
+        description: 'Learn the basics of programming.',
+        lessons: [{
+          id: 'lesson-1',
+          title: 'What is Programming?',
+          duration: 600,
+          text:" In this lesson, we will explore the fundamentals of programming, including its definition, history, and importance in the modern world.",
+          isFree: true,
+          isPreview : true,
+          courseId: "123",
+          order: 1,
+          type: CourseItemType.LESSON
+        }],
+      }],
+      reviews: [],
+      totalReviews: 251,
     };
   }
 
@@ -65,6 +106,7 @@ export class CourseService {
         title: 'Advanced Topics',
         duration: 30,
         text: 'We now dive into more advanced topics.',
+
       } as Lesson,
 
       {
