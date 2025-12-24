@@ -1,9 +1,13 @@
-<article class="course-card">
-  <h3>{{ course.title }}</h3>
-  <p>{{ course.description }}</p>
-  <p>Category: {{ course.category }}</p>
-  <p>Level: {{ course.level }}</p>
-  <p>Price: {{ course.price }}</p>
-  <p>Duration: {{ course.durationInSeconds }} sec</p>
-  <p>Rating: {{ course.rating }}</p>
+<article class="bg-primary-05 text-foreground h-full border border-foreground p-4 rounded-l shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col justify-around ">
+  <div class="space-y-2">
+  <h3 class="text-foreground font-bold text-center">{{ course.title }}</h3>
+  <p class="text-foreground text-center pb-4">{{ course.description }}</p>
+  </div>
+  <div class="space-y-1">
+  <p class="text-foreground text-start"> <span class="font-medium underline">Category:</span>  {{ course.category }}</p>
+  <p class="text-foreground text-start"> <span class="font-medium underline">Level:</span> {{ course.level }}</p>
+  <p class="text-foreground text-start"> <span class="font-medium underline">Price:</span> {{ course.price }}</p>
+  <p class="text-foreground text-start"> <span class="font-medium underline">Duration:</span> {{ course.durationInSeconds }} sec</p>
+  <p class="text-foreground text-start"> <span class="font-medium underline">Rating:</span> {{ course.rating }}</p>
+</div>
 </article>
