@@ -1,0 +1,96 @@
+<div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+  <div class="flex gap-4">
+    <!-- Course Thumbnail -->
+    <div class="relative w-32 h-24 flex-shrink-0">
+      <img
+        [src]="enrolledCourse.course.thumbnail || 'https://via.placeholder.com/150x100'"
+        [alt]="enrolledCourse.course.title"
+        class="w-full h-full object-cover"
+      />
+      <div
+        class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition flex items-center justify-center"
+      >
+        <button
+          (click)="onPlay()"
+          class="opacity-0 group-hover:opacity-100 transition bg-white rounded-full p-2"
+        >
+          <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Level Badge -->
+      <div class="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+        {{ enrolledCourse.course.level }}
+      </div>
+    </div>
+
+    <!-- Course Info -->
+    <div class="flex-1 p-4 min-w-0">
+      <h3 class="font-semibold text-gray-900 mb-1 truncate">
+        {{ enrolledCourse.course.title }}
+      </h3>
+      <p class="text-sm text-gray-600 mb-2">by {{ enrolledCourse.course.instructorId }}</p>
+
+      <div class="flex items-center gap-4 text-sm text-gray-600 mb-3">
+        <span class="flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          {{
+            formatDuration(
+              enrolledCourse.course.durationInSeconds - enrolledCourse.timeSpentInSeconds
+            )
+          }}
+          left
+        </span>
+
+        @if (enrolledCourse.dueDate) {
+        <span class="flex items-center gap-1" [class.text-red-600]="isOverdue()">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+          {{ getTimeRemaining() }}
+        </span>
+        }
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="mb-2">
+        <div class="flex items-center justify-between text-sm mb-1">
+          <span class="text-gray-600">Progress</span>
+          <span class="font-medium text-gray-900">{{ enrolledCourse.progress }}%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div
+            [ngClass]="getProgressColor()"
+            class="h-2 rounded-full transition-all"
+            [style.width.%]="enrolledCourse.progress"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Next Lesson -->
+      <button
+        (click)="onContinue()"
+        class="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
+      >
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+        Continue: {{ enrolledCourse.nextLesson }}
+      </button>
+    </div>
+  </div>
+</div>
