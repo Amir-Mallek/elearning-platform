@@ -1,37 +1,87 @@
-<div class="toolbar">
-  <button (click)="view = 'grid'">Grid</button>
-  <button (click)="view = 'list'">List</button>
+<div class="min-h-screen bg-gray-100">
+  <!-- Header -->
+  <div class="bg-background shadow-sm border-b border-gray-200 px-6 py-4">
+    <h1 class="text-2xl font-bold text-foreground">Courses catalog</h1>
+    <p class="text-sm text-gray-500 mt-1">
+      Browse all available courses and continue your learning journey.
+    </p>
+  </div>
+
+  <!-- Catalog wrapper: column with growing content -->
+  <div class="max-w-6xl mx-auto px-4 py-6">
+    <div class="bg-background rounded-xl shadow-sm border border-border
+                flex flex-col min-h-[450px]">
+      <!-- Toolbar -->
+      <div class="px-4 pt-4 pb-3 border-b border-border flex items-center justify-between">
+        <!-- search / filters ... -->
+        <div class="flex items-center gap-3">
+          <input type="text" placeholder="Search courses" class="px-3 py-2 text-sm rounded-lg border border-border text-foreground bg-background
+                   focus:outline-none focus:ring-2 focus:ring-primary-50" />
+        </div>
+
+        <!-- view toggle -->
+        <div class="btn-toggle-group">
+          <button (click)="view = 'grid'" class="btn-toggle"
+            [ngClass]="view === 'grid' ? 'btn-toggle--active' : 'btn-toggle--inactive'">
+            Grid
+          </button>
+
+          <button (click)="view = 'list'" class="btn-toggle"
+            [ngClass]="view === 'list' ? 'btn-toggle--active' : 'btn-toggle--inactive'">
+            List
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Courses area -->
+      <div class="flex-1 overflow-y-auto px-4 py-4">
+        @if (view === 'grid') {
+        <section class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          @for (course of pagedCourses; track course.id) {
+          <app-course-card [course]="course" viewMode="grid"></app-course-card>
+          }
+        </section>
+        }
+        @if (view === 'list') {
+        <section class="space-y-4">
+          @for (course of pagedCourses; track course.id) {
+          <app-course-card [course]="course" viewMode="list"></app-course-card>
+          }
+        </section>
+        }
+      </div>
+
+      <!-- Pagination bar  -->
+      @if (totalPages > 1) {
+      <nav class="px-4 py-3 border-t border-border flex items-center justify-center gap-1" aria-label="Pagination">
+        <button (click)="goToPage(1)" [disabled]="page === 1" class="btn-small"
+          [ngClass]="page === 1 ? 'btn-small--inactive' : 'btn-small--active'">
+          «</button>
+        <button (click)="goToPage(page - 1)" [disabled]="page === 1" class="btn-small"
+          [ngClass]="page === 1 ? 'btn-small--inactive' : 'btn-small--active'">
+          Prev
+        </button>
+
+        @for (p of compactPages; track p) {
+        <button (click)="goToPage(p)" class="btn-small" [ngClass]="{ 'btn-small--inactive': p !== page }">
+          {{ p }}
+        </button>
+        }
+
+
+        <button (click)="goToPage(page + 1)" [disabled]="page === totalPages" class="btn-small"
+          [ngClass]="page === totalPages ? 'btn-small--inactive' : 'btn-small--active'">
+          Next
+        </button>
+
+        <button (click)="goToPage(totalPages)" [disabled]="page === totalPages" class="btn-small"
+          [ngClass]="page === totalPages ? 'btn-small--inactive' : 'btn-small--active'">
+          »
+        </button>
+
+      </nav>
+      }
+    </div>
+  </div>
 </div>
-
-<!-- Courses -->
-@if (view === 'grid') {
-<section class="grid">
-  @for (course of pagedCourses; track course.id) {
-  <app-course-card [course]="course"></app-course-card>
-  }
-</section>
-} @if (view === 'list') {
-<section class="list">
-  @for (course of pagedCourses; track course.id) {
-  <app-course-card [course]="course"></app-course-card>
-  }
-</section>
-}
-
-<!-- Pagination controls -->
-@if (totalPages > 1) {
-<nav class="pagination">
-  <button (click)="goToPage(1)" [disabled]="page === 1"><<</button>
-  <button (click)="goToPage(page - 1)" [disabled]="page === 1">Prev</button>
-
-  @for (p of compactPages; track p) {
-  <button (click)="goToPage(p)" [class.notselected]="p !== page">
-    {{ p }}
-  </button>
-  }
-
-  <button (click)="goToPage(page + 1)" [disabled]="page === totalPages">Next</button>
-  <button (click)="goToPage(totalPages)" [disabled]="page === totalPages">>></button>
-</nav>
-
-}
