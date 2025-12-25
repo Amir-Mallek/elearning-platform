@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Course } from '@models/course.model';
-import { CourseService } from '@services/course.service';
+import { CourseService } from '@services/course-service';
 import { CourseCardComponent } from '@components/course-card/course-card';
 
 @Component({
@@ -80,6 +80,4 @@ export class CourseCatalogComponent {
 
     return pages;
   }
-
-
 }

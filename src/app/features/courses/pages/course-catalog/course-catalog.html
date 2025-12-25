@@ -10,9 +10,7 @@
   <app-course-card [course]="course"></app-course-card>
   }
 </section>
-}
-
-@if (view === 'list') {
+} @if (view === 'list') {
 <section class="list">
   @for (course of pagedCourses; track course.id) {
   <app-course-card [course]="course"></app-course-card>
@@ -35,6 +33,5 @@
   <button (click)="goToPage(page + 1)" [disabled]="page === totalPages">Next</button>
   <button (click)="goToPage(totalPages)" [disabled]="page === totalPages">>></button>
 </nav>
-
 
 }
