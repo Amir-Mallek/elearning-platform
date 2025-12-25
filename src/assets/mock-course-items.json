@@ -1,0 +1,83 @@
+[
+  {
+    "id": "lesson-1",
+    "courseId": "course-1",
+    "order": 1,
+    "type": "LESSON",
+    "title": "Introduction to the Course",
+    "duration": 10,
+    "text": "Welcome! In this lesson we will cover the course objectives."
+  },
+  {
+    "id": "lesson-2",
+    "courseId": "course-1",
+    "order": 2,
+    "type": "LESSON",
+    "title": "Core Concepts",
+    "duration": 25,
+    "text": "This lesson explains the core concepts you need to know."
+  },
+  {
+    "id": "quiz-1",
+    "courseId": "course-1",
+    "order": 3,
+    "type": "QUIZ",
+    "questions": [
+      {
+        "text": "What is Angular?",
+        "options": ["Option A", "Option B", "Option C"],
+        "answer": [0, 2],
+        "requireAll": false
+      },
+      {
+        "text": "What is PHP?",
+        "options": ["Option A", "Option B", "Option C"],
+        "answer": [0],
+        "requireAll": true
+      }
+    ],
+    "questionCount": 5
+  },
+  {
+    "id": "lesson-3",
+    "courseId": "course-1",
+    "order": 4,
+    "type": "LESSON",
+    "title": "Advanced Topics",
+    "duration": 30,
+    "text": "We now dive into more advanced topics."
+  },
+  {
+    "id": "quiz-2",
+    "courseId": "course-1",
+    "order": 5,
+    "type": "QUIZ",
+    "questions": [
+      {
+        "text": "What is Angular?",
+        "options": ["Option A", "Option B", "Option C"],
+        "answer": [0, 2],
+        "requireAll": false
+      },
+      {
+        "text": "What is PHP?",
+        "options": ["Option A", "Option B", "Option C"],
+        "answer": [0],
+        "requireAll": true
+      },
+      {
+        "text": "What is Angular?",
+        "options": ["Option A", "Option B", "Option C"],
+        "answer": [0, 2],
+        "requireAll": false
+      },
+      {
+        "text": "What is PHP?",
+        "options": ["Option A", "Option B", "Option C"],
+        "answer": [0],
+        "requireAll": true
+      }
+    ],
+    "questionCount": 10
+  }
+]
