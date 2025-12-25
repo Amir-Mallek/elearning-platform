@@ -208,7 +208,4 @@
   .btn-toggle--inactive:hover {
     background-color: rgba(var(--primary), var(--opacity-05));
   }
-
-
-
 }
