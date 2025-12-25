@@ -1,25 +1,134 @@
-<article
-  class="bg-primary-05 text-foreground h-full border border-foreground p-4 rounded-l shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col justify-around"
+<article class="flip-card h-full">
+  <div
+  class="flip-card-inner"
+  [ngClass]="[
+    showBack ? 'flip-card-inner--back' : 'flip-card-inner--front',
+    viewMode === 'grid' ? 'h-[22rem]' : 'h-auto'
+  ]"
 >
-  <div class="space-y-2">
-    <h3 class="text-foreground font-bold text-center">{{ course.title }}</h3>
-    <p class="text-foreground text-center pb-4">{{ course.description }}</p>
-  </div>
-  <div class="space-y-1">
-    <p class="text-foreground text-start">
-      <span class="font-medium underline">Category:</span> {{ course.category }}
-    </p>
-    <p class="text-foreground text-start">
-      <span class="font-medium underline">Level:</span> {{ course.level }}
-    </p>
-    <p class="text-foreground text-start">
-      <span class="font-medium underline">Price:</span> {{ course.price }}
-    </p>
-    <p class="text-foreground text-start">
-      <span class="font-medium underline">Duration:</span> {{ course.durationInSeconds }} sec
-    </p>
-    <p class="text-foreground text-start">
-      <span class="font-medium underline">Rating:</span> {{ course.rating }}
-    </p>
+    <!-- FRONT -->
+    <div class="flip-card-face flip-card-front bg-primary-05 text-foreground border border-foreground
+             p-4 rounded-l shadow-md hover:shadow-lg flex flex-col justify-between">
+      <div class="h-full flex flex-col items-center justify-center text-center gap-4">
+        <h3 class="text-foreground text-lg font-bold text-center line-clamp-2">
+          {{ course.title }}
+        </h3>
+
+        <div class="flex flex-wrap items-center justify-center gap-3 text-sm">
+          <!-- Course Duration -->
+          <div class="inline-flex items-center text-base gap-1">
+            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>{{ course.durationInSeconds }}s</span>
+          </div>
+
+          <!-- Course Price -->
+          <div class="inline-flex items-center text-base gap-1">
+            <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-10v2m0 8v2"></path>
+            </svg>
+            <span>{{ course.price }}</span>
+          </div>
+
+          <!-- Course Level -->
+          <div class="inline-flex items-center gap-1">
+            <svg class="w-4 h-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4l3 8H9l3-8zm0 8v8"></path>
+            </svg>
+            <span>{{ course.level }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Details icon button -->
+      <div class="mt-4 flex justify-end">
+        <button type="button"
+          class="btn-small btn-small--inactive flex items-center justify-center !px-2 !py-1 rounded-full"
+          (click)="toggleDetails()">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 4h.01"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- BACK -->
+    <div class="flip-card-face flip-card-back bg-primary-05 text-foreground border border-foreground
+         p-4 rounded-l shadow-md flex flex-col justify-between">
+      <div class="space-y-3">
+        <h3 class="text-foreground text-lg font-bold text-center line-clamp-2 py-3">
+          {{ course.title }}
+        </h3>
+
+        <p class="text-foreground text-sm text-center pb-3">
+          {{ course.description }}
+        </p>
+
+        <!-- Category -->
+        <p class="text-foreground text-sm flex items-center gap-2">
+          <svg class="w-4 h-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h4l6 6-4 4-6-6V7z"></path>
+          </svg>
+          <span class="font-medium">Category:</span>
+          <span>{{ course.category }}</span>
+        </p>
+
+        <!-- Level -->
+        <p class="text-foreground text-sm flex items-center gap-2">
+          <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 14l9-5-9-5-9 5 9 5zm0 0v6m-4-4l4 2 4-2"></path>
+          </svg>
+          <span class="font-medium">Level:</span>
+          <span>{{ course.level }}</span>
+        </p>
+
+        <!-- Price -->
+        <p class="text-foreground text-sm flex items-center gap-2">
+          <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-10v2m0 8v2"></path>
+          </svg>
+          <span class="font-medium">Price:</span>
+          <span>{{ course.price }}</span>
+        </p>
+
+        <!-- Duration -->
+        <p class="text-foreground text-sm flex items-center gap-2">
+          <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span class="font-medium">Duration:</span>
+          <span>{{ course.durationInSeconds }} sec</span>
+        </p>
+
+        <!-- Rating -->
+        <p class="text-foreground text-sm flex items-center gap-2">
+          <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.97 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.88 8.72c-.783-.57-.382-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+            </path>
+          </svg>
+          <span class="font-medium">Rating:</span>
+          <span>{{ course.rating }}</span>
+        </p>
+      </div>
+
+      <!-- Details Toggle -->
+      <div class="mt-4 flex justify-end">
+        <button type="button"
+          class="btn-small btn-small--inactive flex items-center justify-center !px-2 !py-1 rounded-full"
+          (click)="toggleDetails()">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 4h.01"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
   </div>
 </article>
