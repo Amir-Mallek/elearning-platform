@@ -1,7 +1,7 @@
 import { Injectable, model } from '@angular/core';
 import { Course } from '@models/course.model';
 import mockCourses from '@assets/mock-courses.json';
-import mockCoursesItems from '@assets/mock-course-items.json';
+import mockCourseItems from '@assets/mock-course-items.json';
 import { CourseItem } from '@models/course-item.model';
 
 @Injectable({
@@ -12,6 +12,6 @@ export class CourseService {
     return mockCourses as Course[];
   }
   getCourseItems(courseId: string): CourseItem[] {
-    return mockCoursesItems as CourseItem[];
+    return mockCourseItems as CourseItem[];
   }
 }

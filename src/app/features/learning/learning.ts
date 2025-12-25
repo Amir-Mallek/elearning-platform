@@ -4,7 +4,7 @@ import { Lesson } from '../../shared/models/lesson.model';
 import { Course } from '../../shared/models/course.model';
 import { Quiz } from '../../shared/models/quiz.model';
 import { CourseItemType } from '../../shared/enums/course-item-type.enum';
-import { CourseService } from '../../shared/services/course-service';
+import { CourseService } from '../../shared/services/course.service';
 
 @Component({
   selector: 'app-learning',
