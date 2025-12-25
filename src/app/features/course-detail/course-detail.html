@@ -1,0 +1,329 @@
+@if (course) {
+
+  <!-- ================= HERO SECTION ================= -->
+  <div class="bg-gradient-to-b from-background to-muted/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid lg:grid-cols-3 gap-10">
+
+        <!-- LEFT CONTENT -->
+        <div class="lg:col-span-2">
+          <div class="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+            <span>{{ course.category }}</span>
+            <span>•</span>
+            <span class="capitalize">{{ course.level.toLowerCase() }}</span>
+          </div>
+
+          <h1 class="text-4xl font-extrabold mb-4 text-balance">
+            {{ course.title }}
+          </h1>
+
+          <p class="text-lg text-muted-foreground mb-6 text-pretty">
+            {{ course.description }}
+          </p>
+
+          <!-- META INFO -->
+          <div class="flex flex-wrap items-center gap-6 mb-6">
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-semibold">{{ course.rating }}</span>
+              <div class="flex">
+                <svg *ngFor="let star of [1,2,3,4,5]"
+                     class="w-5 h-5"
+                     [ngClass]="star <= course.rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted fill-muted'"
+                     viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <span class="text-sm text-muted-foreground">
+              ({{ formatUtils.formatNumber(course.totalReviews) }} ratings)
+            </span>
+            </div>
+
+            <div class="flex items-center gap-2 text-sm text-muted-foreground">
+              👥 {{ formatUtils.formatNumber(course.enrolledCount) }} students
+            </div>
+
+            <div class="flex items-center gap-2 text-sm text-muted-foreground">
+              ⏱ {{ formatUtils.formatDuration(course.durationInSeconds) }}
+            </div>
+
+            <div class="flex items-center gap-2 text-sm text-muted-foreground">
+              🌍 {{ course.language }}
+            </div>
+          </div>
+
+          <!-- INSTRUCTOR SHORT -->
+          <div class="flex items-center gap-4">
+            <img [src]="course.instructor.avatar"
+                 class="w-14 h-14 rounded-full object-cover ring-2 ring-primary/20">
+            <div>
+              <p class="font-semibold">{{ course.instructor.name }}</p>
+              <p class="text-sm text-muted-foreground">
+                {{ course.instructor.title }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= DESKTOP ENROLLMENT CARD ================= -->
+        <div class="hidden lg:block">
+          <div
+            class="fixed top-24 right-8 w-[380px]
+                 bg-card border border-border/50
+                 rounded-3xl shadow-2xl shadow-black/10
+                 overflow-hidden z-50">
+
+            <img [ngSrc]="course.thumbnail"
+                 class="w-full h-52 object-cover rounded-t-3xl">
+
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-6">
+              <span class="text-4xl font-extrabold">
+                {{ formatUtils.formatPrice(course.price) }}
+              </span>
+                <span class="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full">
+                Best Seller
+              </span>
+              </div>
+
+              <button
+                (click)="handleEnrollment()"
+                class="w-full bg-primary text-primary-foreground
+                     hover:bg-primary/90 active:scale-[0.98]
+                     font-semibold py-4 rounded-xl
+                     shadow-lg shadow-primary/30
+                     transition-all mb-4">
+                {{ isEnrolled ? 'Go to Course' : 'Enroll Now' }}
+              </button>
+
+              <div class="flex gap-2 mb-6">
+                <button
+                  class="flex-1 bg-muted hover:bg-accent
+                       rounded-xl py-2 flex items-center
+                       justify-center gap-2 transition">
+                  ❤️ Save
+                </button>
+                <button
+                  class="flex-1 bg-muted hover:bg-accent
+                       rounded-xl py-2 flex items-center
+                       justify-center gap-2 transition">
+                  🔗 Share
+                </button>
+              </div>
+
+              <div class="space-y-3 text-sm text-muted-foreground">
+                <p>✔ {{ course.lessonsCount }} lessons</p>
+                <p>✔ {{ formatUtils.formatDuration(course.durationInSeconds) }}</p>
+                <p>✔ {{ course.quizCount }} quizzes</p>
+                <p>✔ Lifetime access</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid lg:grid-cols-5 gap-10 lg:pr-[420px]">
+
+      <div class="lg:col-span-5 space-y-14">
+
+        <!-- WHAT YOU'LL LEARN -->
+        <section>
+          <h2 class="text-2xl font-bold mb-6">What you'll learn</h2>
+          <div class="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
+            <div class="grid md:grid-cols-2 gap-4">
+              <div *ngFor="let o of course.learningObjectives"
+                   class="flex items-start gap-3">
+                <span class="text-green-600 mt-1">✔</span>
+                <span class="text-sm">{{ o }}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- COURSE CONTENT -->
+        <section>
+          <h2 class="text-2xl font-bold mb-6">Course content</h2>
+          <div class="bg-card border border-border/50 rounded-2xl overflow-hidden shadow-sm">
+            <div class="p-4 bg-muted/40 text-sm text-muted-foreground">
+              {{ course.modules.length }} sections •
+              {{ course.lessonsCount }} lectures •
+              {{ formatUtils.formatDuration(getTotalDuration()) }}
+            </div>
+
+            <div class="divide-y">
+              <div *ngFor="let module of course.modules">
+                <button
+                  (click)="toggleModule(module.id)"
+                  class="w-full flex justify-between p-5 hover:bg-muted/40 transition">
+                  <span class="font-semibold">{{ module.title }}</span>
+                  <span>{{ module.lessons.length }} lectures</span>
+                </button>
+
+                <div *ngIf="isModuleExpanded(module.id)"
+                     class="bg-muted/20">
+                  <div *ngFor="let lesson of module.lessons"
+                       class="flex justify-between p-4 pl-10 text-sm hover:bg-muted/40">
+                    <span>{{ lesson.title }}</span>
+                    <span>{{ formatUtils.formatDuration(lesson.duration) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- INSTRUCTOR -->
+        <section>
+          <h2 class="text-2xl font-bold mb-6">Instructor</h2>
+          <div class="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
+            <div class="flex gap-6 mb-6">
+              <img [src]="course.instructor.avatar"
+                   class="w-24 h-24 rounded-full object-cover">
+              <div>
+                <h3 class="text-xl font-bold">{{ course.instructor.name }}</h3>
+                <p class="text-muted-foreground">{{ course.instructor.title }}</p>
+              </div>
+            </div>
+            <p class="text-sm text-muted-foreground">
+              {{ course.instructor.bio }}
+            </p>
+          </div>
+        </section>
+
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--  -->
+
+<!-- Student Reviews -->
+        <section>
+          <h2 class="text-2xl font-bold mb-6">Student feedback</h2>
+
+          <div class="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
+            <div class="flex items-center gap-8 mb-6">
+              <div class="text-center">
+                <div class="text-5xl font-bold mb-2">{{ course.rating }}</div>
+                <div class="flex items-center justify-center mb-1">
+                  <svg *ngFor="let star of [1,2,3,4,5]" class="w-5 h-5" [ngClass]="star <= course.rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted fill-muted'" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                </div>
+                <p class="text-sm text-muted-foreground">Course Rating</p>
+              </div>
+
+              <div class="flex-1 space-y-2">
+                <div *ngFor="let stars of [5,4,3,2,1]" class="flex items-center gap-3">
+                  <div class="flex items-center gap-2 w-24">
+                    <div class="flex">
+                      <svg *ngFor="let star of [1]" class="w-4 h-4 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    </div>
+                    <span class="text-sm text-muted-foreground">{{ stars }}</span>
+                  </div>
+                  <div class="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                    <div class="h-full bg-yellow-400" [style.width.%]="getRatingPercentage(stars)"></div>
+                  </div>
+                  <span class="text-sm text-muted-foreground w-12 text-right">{{ getRatingPercentage(stars) }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="space-y-6">
+            <div *ngFor="let review of course.reviews" class="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
+              <div class="flex items-start gap-4 mb-4">
+                <img [src]="review.userAvatar" [alt]="review.userName" class="w-12 h-12 rounded-full object-cover">
+                <div class="flex-1">
+                  <h4 class="font-semibold mb-1">{{ review.userName }}</h4>
+                  <div class="flex items-center gap-2">
+                    <div class="flex">
+                      <svg *ngFor="let star of [1,2,3,4,5]" class="w-4 h-4" [ngClass]="star <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted fill-muted'" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    </div>
+                    <span class="text-sm text-muted-foreground">{{ formatUtils.formatDate(review.createdAt) }}</span>
+                  </div>
+                </div>
+              </div>
+              <p class="text-sm text-muted-foreground leading-relaxed">{{ review.comment }}</p>
+            </div>
+          </div>
+        </section>
+        <!-- GIVE REVIEW -->
+        <section>
+          <div class="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
+            <h3 class="text-lg font-semibold mb-4">Leave a review</h3>
+
+            <!-- CLICKABLE STARS -->
+            <div class="flex items-center gap-1 mb-4">
+              <button
+                *ngFor="let star of [1,2,3,4,5]"
+                type="button"
+                (mouseenter)="hoverRating = star"
+                (mouseleave)="hoverRating = 0"
+                (click)="setRating(star)"
+                class="transition-transform hover:scale-110"
+              >
+                <svg
+                  class="w-7 h-7"
+                  [ngClass]="
+          star <= (hoverRating || selectedRating)
+            ? 'text-yellow-400 fill-yellow-400'
+            : 'text-muted fill-muted'
+        "
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <!-- TEXTAREA -->
+            <textarea
+              [(ngModel)]="reviewComment"
+              rows="4"
+              placeholder="Share your experience..."
+              class="w-full border rounded-xl p-3 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
+            ></textarea>
+
+            <!-- SUBMIT -->
+            <button
+              (click)="submitReview()"
+              [disabled]="!selectedRating"
+              class="bg-primary text-primary-foreground
+           px-6 py-2 rounded-xl
+           disabled:opacity-50
+           hover:bg-primary/90 transition"
+            >
+              Submit review
+            </button>
+          </div>
+        </section>
+
+        <!-- Mobile Enrollment Card -->
+        <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t p-4 z-10">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <div class="text-2xl font-bold">{{ formatUtils.formatPrice(course.price) }}</div>
+            </div>
+            <button
+              (click)="handleEnrollment()"
+              class="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold py-3 px-6 rounded-md transition-colors">
+              {{ isEnrolled ? 'Go to Course' : 'Enroll Now' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+ }
