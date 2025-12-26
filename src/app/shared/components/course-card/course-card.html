@@ -64,7 +64,7 @@
         </h3>
 
         <p class="text-foreground text-sm text-center pb-3">
-          {{ course.description }}
+          {{ course.description | truncate: 70 }}
         </p>
 
         <!-- Category -->
