@@ -4,7 +4,7 @@
     "title": "Introduction to Web Development",
     "description": "Learn the fundamentals of HTML, CSS, and basic JavaScript to build static web pages.",
     "instructorId": "instructor-1",
-    "price": 29.99,
+    "price": 0,
     "rating": 4.3,
     "level": "BEGINNER",
     "durationInSeconds": 5400,

@@ -18,7 +18,9 @@
     "paths": {
       "@assets/*": ["src/assets/*"],
       "@models/*": ["src/app/shared/models/*"],
+      "@enums/*": ["src/app/shared/enums/*"],
       "@services/*": ["src/app/shared/services/*"],
+      "@pipes/*": ["src/app/shared/pipes/*"],
       "@components/*": ["src/app/shared/components/*"],
       "@features/*": ["src/app/features/*"],
     }
