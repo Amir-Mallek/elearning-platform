@@ -3,21 +3,19 @@
 
 /* ===== Global Theme Variables ===== */
 :root {
-  --primary: 37, 71, 144;
-  /* RGB for #254790 */
-  --secondary: 150, 95, 0;
-  /* RGB for #965F00 */
-  --success: 4, 106, 72;
-  /* RGB for #046A48 */
-  --danger: 154, 9, 9;
-  /* RGB for #9A0909 */
-  --background: 255, 255, 255;
-  /* RGB for #FFFFFF */
-  --foreground: 17, 24, 39;
-  /* RGB for #111827 */
-  --border: 191, 194, 199;
-  /* RGB for #BFC2C7 */
+  /* Brand Colors */
+  --primary: 2, 115, 94;       /* #02735E */
+  --secondary: 3, 166, 120;    /* #03A678 */
+  --success: 1, 64, 64;        /* #014040 */
+  --danger: 115, 23, 2;        /* #731702 */
+  --warning: 242, 116, 5;      /* #F27405 */
 
+  /* Neutral Colors */
+  --background: 255, 255, 255; /* #FFFFFF */
+  --foreground: 17, 24, 39;    /* #111827 */
+  --border: 191, 194, 199;     /* #BFC2C7 */
+
+  /* Opacities */
   --opacity-100: 1;
   --opacity-80: 0.8;
   --opacity-60: 0.6;
@@ -28,14 +26,14 @@
   --opacity-05: 0.05;
 }
 
-/* Dark Mode */
+/* ===== Dark Mode ===== */
 .dark {
-  --primary: 96, 165, 250;
   --background: 2, 6, 23;
   --foreground: 229, 231, 235;
+  --border: 55, 65, 81;
 }
 
-/* Tailwind-style Utilities */
+/* ===== Utilities ===== */
 @layer utilities {
 
   /* Backgrounds */
@@ -87,6 +85,10 @@
     background-color: rgba(var(--danger), var(--opacity-100));
   }
 
+  .bg-warning {
+    background-color: rgba(var(--warning), var(--opacity-100));
+  }
+
   /* Text */
   .text-primary {
     color: rgba(var(--primary), var(--opacity-100));
@@ -102,6 +104,10 @@
 
   .text-danger {
     color: rgba(var(--danger), var(--opacity-100));
+  }
+
+  .text-warning {
+    color: rgba(var(--warning), var(--opacity-100));
   }
 
   .text-foreground {
@@ -129,19 +135,23 @@
     border-color: rgba(var(--danger), var(--opacity-100));
   }
 
+  .border-warning {
+    border-color: rgba(var(--warning), var(--opacity-100));
+  }
+
   .border-foreground {
     border-color: rgba(var(--foreground), var(--opacity-100));
   }
 }
 
+/* ===== Components ===== */
 @layer utilities {
 
   /* Primary Button */
   .btn-primary {
     background-color: rgb(var(--primary));
     color: rgb(var(--background));
-
-    @apply flex items-center px-4 py-2 rounded-lg transition-colors;
+    /*@apply flex items-center px-4 py-2 rounded-lg transition-colors;*/
   }
 
   .btn-primary:hover {
@@ -169,13 +179,11 @@
     background-color: rgba(var(--primary), var(--opacity-05));
   }
 
-
   .btn-small--active {
     background-color: rgba(var(--background), var(--opacity-100));
     color: rgb(var(--foreground));
-    border-color: rgb(var(--primary), var(--opacity-20));
+    border-color: rgba(var(--primary), var(--opacity-20));
   }
-
 
   .btn-small--active:hover:not(:disabled) {
     background-color: rgba(var(--primary), var(--opacity-05));
@@ -188,7 +196,7 @@
   /* Button Toggle */
   .btn-toggle-group {
     background-color: rgba(var(--background), var(--opacity-100));
-    border-color: rgba(var(--border));
+    border-color: rgba(var(--border), var(--opacity-100));
     @apply inline-flex rounded-lg border shadow-sm overflow-hidden;
   }
 
@@ -208,7 +216,4 @@
   .btn-toggle--inactive:hover {
     background-color: rgba(var(--primary), var(--opacity-05));
   }
-
-
-
 }
