@@ -103,7 +103,7 @@
                 <p>✔ {{ course()?.lessonsCount }} lessons</p>
                 <p>✔ {{ formatUtils.formatDuration(course()?.durationInSeconds ?? 0) }}</p>
                 <p>✔ {{ course()?.quizCount }} quizzes</p>
-                <p>✔ Certificate included</p>
+<!--                <p>✔ Certificate included</p>-->
                 <p>✔ Lifetime access</p>
               </div>
 
@@ -114,7 +114,15 @@
       </div>
     </div>
   </div>
-
+  <!-- ================= CELEBRATION EFFECT ================= -->
+  @if (showCelebration()) {
+    <div class="celebration-overlay">
+      <div class="success-message">
+        <h2>🎉 Congratulations! 🎉</h2>
+        <p>You're now enrolled in {{ course()?.title }}</p>
+      </div>
+    </div>
+  }
 
   <!-- ================= MAIN CONTENT ================= -->
   <div class="max-w-7xl mx-auto px-6 lg:px-12 py-24">
