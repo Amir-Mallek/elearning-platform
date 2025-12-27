@@ -1,121 +1,112 @@
-@if (course) {
+@if (course()) {
 
-  <!-- ================= HERO SECTION ================= -->
-  <div class="bg-gradient-to-b from-background to-muted/30">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="grid lg:grid-cols-3 gap-10">
+  <!-- ================= HERO ================= -->
+  <div class="relative bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background ">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-24">
+      <div class="grid lg:grid-cols-3 gap-16">
 
-        <!-- LEFT CONTENT -->
-        <div class="lg:col-span-2">
-          <div class="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-            <span>{{ course.category }}</span>
-            <span>•</span>
-            <span class="capitalize">{{ course.level.toLowerCase() }}</span>
+        <!-- LEFT -->
+        <div class="lg:col-span-2 space-y-8">
+
+          <!-- Category -->
+          <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold uppercase tracking-widest text-primary">
+            <span>{{ course()?.category }}</span>
+            <span class="w-1 h-1 rounded-full bg-primary/40"></span>
+            <span>{{ course()?.level }}</span>
           </div>
 
-          <h1 class="text-4xl font-extrabold mb-4 text-balance">
-            {{ course.title }}
+          <!-- Title -->
+          <h1 class="text-5xl lg:text-7xl font-serif font-black tracking-tight leading-[1.05]">
+            {{ course()?.title }}
           </h1>
 
-          <p class="text-lg text-muted-foreground mb-6 text-pretty">
-            {{ course.description }}
+          <!-- Description -->
+          <p class="text-xl text-muted-foreground max-w-2xl leading-relaxed">
+            {{ course()?.description }}
           </p>
 
-          <!-- META INFO -->
-          <div class="flex flex-wrap items-center gap-6 mb-6">
-            <div class="flex items-center gap-2">
-              <span class="text-xl font-semibold">{{ course.rating }}</span>
-              <div class="flex">
-                <svg *ngFor="let star of [1,2,3,4,5]"
+          <!-- Meta -->
+          <div class="flex flex-wrap gap-8 py-6 border-y border-border/40">
+
+            <div class="flex items-center gap-3">
+              <span class="text-3xl font-serif font-bold text-primary">{{ averageRating() }}</span>
+              <div class="flex gap-0.5">
+                <svg *ngFor="let s of [1,2,3,4,5]"
                      class="w-5 h-5"
-                     [ngClass]="star <= course.rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted fill-muted'"
+                     [ngClass]="s <= averageRating() ? 'text-amber-400 fill-amber-400' : 'text-border fill-border'"
                      viewBox="0 0 24 24">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
               </div>
               <span class="text-sm text-muted-foreground">
-              ({{ formatUtils.formatNumber(course.totalReviews) }} ratings)
-            </span>
+                {{ reviewsCount() }} reviews
+              </span>
             </div>
 
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
-              👥 {{ formatUtils.formatNumber(course.enrolledCount) }} students
+              👥 {{ formatUtils.formatNumber(course()?.enrolledCount ?? 0) }} students
             </div>
 
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
-              ⏱ {{ formatUtils.formatDuration(course.durationInSeconds) }}
+              ⏱ {{ formatUtils.formatDuration(course()?.durationInSeconds ?? 0) }}
             </div>
 
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
-              🌍 {{ course.language }}
+              🌍 {{ course()?.language }}
             </div>
           </div>
 
-          <!-- INSTRUCTOR SHORT -->
-          <div class="flex items-center gap-4">
-            <img [src]="course.instructor.avatar"
-                 class="w-14 h-14 rounded-full object-cover ring-2 ring-primary/20">
+          <!-- Instructor -->
+          <div class="flex items-center gap-5 p-4 rounded-2xl bg-background/60 backdrop-blur border border-border/20 w-fit">
+            <img [src]="course()?.instructor?.avatar"
+                 class="w-16 h-16 rounded-2xl object-cover shadow-lg"
+                 alt="Instructor">
             <div>
-              <p class="font-semibold">{{ course.instructor.name }}</p>
-              <p class="text-sm text-muted-foreground">
-                {{ course.instructor.title }}
-              </p>
+              <p class="text-xs uppercase tracking-widest text-primary/60 font-black">Instructor</p>
+              <p class="text-xl font-serif font-bold">{{ course()?.instructor?.name }}</p>
+              <p class="text-sm text-muted-foreground italic">{{ course()?.instructor?.title }}</p>
             </div>
           </div>
+
         </div>
 
-        <!-- ================= DESKTOP ENROLLMENT CARD ================= -->
+        <!-- ================= DESKTOP CARD ================= -->
         <div class="hidden lg:block">
           <div
             class="fixed top-24 right-8 w-[380px]
-                 bg-card border border-border/50
-                 rounded-3xl shadow-2xl shadow-black/10
+                 bg-background border border-border/40
+                 rounded-[3rem]
+                 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.25)]
                  overflow-hidden z-50">
 
-            <img [ngSrc]="course.thumbnail"
-                 class="w-full h-52 object-cover rounded-t-3xl">
+            <img [src]="course()?.thumbnail"
+                 class="w-full h-52 object-cover">
 
-            <div class="p-6">
-              <div class="flex items-center justify-between mb-6">
-              <span class="text-4xl font-extrabold">
-                {{ formatUtils.formatPrice(course.price) }}
-              </span>
-                <span class="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full">
-                Best Seller
-              </span>
+            <div class="p-8 space-y-8">
+
+              <div class="flex items-end gap-3">
+                <span class="text-5xl font-serif font-black">
+                  {{ course()?.price }}
+                </span>
+                <span class="text-sm text-muted-foreground line-through mb-2">
+                  $199.99
+                </span>
               </div>
 
               <button
                 (click)="handleEnrollment()"
-                class="w-full bg-primary text-primary-foreground
-                     hover:bg-primary/90 active:scale-[0.98]
-                     font-semibold py-4 rounded-xl
-                     shadow-lg shadow-primary/30
-                     transition-all mb-4">
-                {{ isEnrolled ? 'Go to Course' : 'Enroll Now' }}
+                class="w-full bg-primary text-primary-foreground py-5 rounded-2xl font-bold text-lg shadow-xl shadow-primary/30 hover:bg-primary/95 transition">
+                {{ isEnrolled() ? 'Go to Course' : 'Enroll Now' }}
               </button>
 
-              <div class="flex gap-2 mb-6">
-                <button
-                  class="flex-1 bg-muted hover:bg-accent
-                       rounded-xl py-2 flex items-center
-                       justify-center gap-2 transition">
-                  ❤️ Save
-                </button>
-                <button
-                  class="flex-1 bg-muted hover:bg-accent
-                       rounded-xl py-2 flex items-center
-                       justify-center gap-2 transition">
-                  🔗 Share
-                </button>
-              </div>
-
-              <div class="space-y-3 text-sm text-muted-foreground">
-                <p>✔ {{ course.lessonsCount }} lessons</p>
-                <p>✔ {{ formatUtils.formatDuration(course.durationInSeconds) }}</p>
-                <p>✔ {{ course.quizCount }} quizzes</p>
+              <div class="space-y-3 text-sm text-muted-foreground pt-6 border-t border-border/30">
+                <p>✔ {{ course()?.lessonsCount }} lessons</p>
+                <p>✔ {{ formatUtils.formatDuration(course()?.durationInSeconds ?? 0) }}</p>
+                <p>✔ {{ course()?.quizCount }} quizzes</p>
+                <p>✔ Certificate included</p>
                 <p>✔ Lifetime access</p>
               </div>
+
             </div>
           </div>
         </div>
@@ -124,52 +115,49 @@
     </div>
   </div>
 
+
   <!-- ================= MAIN CONTENT ================= -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-    <div class="grid lg:grid-cols-5 gap-10 lg:pr-[420px]">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12 py-24">
+    <div class="grid lg:grid-cols-5 gap-16 lg:pr-[420px]">
 
-      <div class="lg:col-span-5 space-y-14">
+      <div class="lg:col-span-5 space-y-24">
 
-        <!-- WHAT YOU'LL LEARN -->
+        <!-- LEARNING -->
         <section>
-          <h2 class="text-2xl font-bold mb-6">What you'll learn</h2>
-          <div class="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
-            <div class="grid md:grid-cols-2 gap-4">
-              <div *ngFor="let o of course.learningObjectives"
-                   class="flex items-start gap-3">
-                <span class="text-green-600 mt-1">✔</span>
-                <span class="text-sm">{{ o }}</span>
+          <h2 class="text-3xl font-serif font-black mb-10">What you'll learn</h2>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div *ngFor="let o of course()?.learningObjectives"
+                 class="p-6 bg-background border border-border/30 rounded-2xl shadow-sm hover:shadow-lg transition">
+              <div class="flex gap-4">
+                <span class="text-primary font-bold text-xl">✓</span>
+                <span class="text-muted-foreground">{{ o }}</span>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- COURSE CONTENT -->
+        <!-- CURRICULUM -->
         <section>
-          <h2 class="text-2xl font-bold mb-6">Course content</h2>
-          <div class="bg-card border border-border/50 rounded-2xl overflow-hidden shadow-sm">
-            <div class="p-4 bg-muted/40 text-sm text-muted-foreground">
-              {{ course.modules.length }} sections •
-              {{ course.lessonsCount }} lectures •
-              {{ formatUtils.formatDuration(getTotalDuration()) }}
-            </div>
+          <h2 class="text-3xl font-serif font-black mb-10">Course content</h2>
 
-            <div class="divide-y">
-              <div *ngFor="let module of course.modules">
-                <button
-                  (click)="toggleModule(module.id)"
-                  class="w-full flex justify-between p-5 hover:bg-muted/40 transition">
-                  <span class="font-semibold">{{ module.title }}</span>
-                  <span>{{ module.lessons.length }} lectures</span>
-                </button>
+          <div class="bg-background border border-border/30 rounded-[3rem] overflow-hidden">
+            <div *ngFor="let module of course()?.modules">
+              <button
+                (click)="toggleModule(module.id)"
+                class="w-full flex justify-between items-center p-8 hover:bg-muted/20 transition">
+                <span class="font-bold text-lg">{{ module.title }}</span>
+                <span class="text-sm text-muted-foreground">
+                  {{ module.lessons.length }} lessons
+                </span>
+              </button>
 
-                <div *ngIf="isModuleExpanded(module.id)"
-                     class="bg-muted/20">
-                  <div *ngFor="let lesson of module.lessons"
-                       class="flex justify-between p-4 pl-10 text-sm hover:bg-muted/40">
-                    <span>{{ lesson.title }}</span>
-                    <span>{{ formatUtils.formatDuration(lesson.duration) }}</span>
-                  </div>
+              <div *ngIf="isModuleExpanded(module.id)" class="bg-muted/20 px-8 pb-6">
+                <div *ngFor="let lesson of module.lessons"
+                     class="flex justify-between py-3 text-sm border-b border-border/20 last:border-none">
+                  <span>{{ lesson.title }}</span>
+                  <span class="text-muted-foreground">
+                    {{ formatUtils.formatDuration(lesson.duration) }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -177,153 +165,182 @@
         </section>
 
         <!-- INSTRUCTOR -->
-        <section>
-          <h2 class="text-2xl font-bold mb-6">Instructor</h2>
-          <div class="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
+<!--        @if(course()?.instructor)-->
+       <section>
+          <h2 class="text-3xl font-serif font-black mb-10">Instructor</h2>
+          <div class="bg-background border border-border/30 rounded-3xl p-8 shadow-sm">
             <div class="flex gap-6 mb-6">
-              <img [src]="course.instructor.avatar"
+              <img [src]="course()?.instructor?.avatar"
                    class="w-24 h-24 rounded-full object-cover">
               <div>
-                <h3 class="text-xl font-bold">{{ course.instructor.name }}</h3>
-                <p class="text-muted-foreground">{{ course.instructor.title }}</p>
+                <h3 class="text-xl font-bold">{{ course()?.instructor?.name }}</h3>
+                <p class="text-muted-foreground">{{ course()?.instructor?.title }}</p>
               </div>
             </div>
-            <p class="text-sm text-muted-foreground">
-              {{ course.instructor.bio }}
-            </p>
-          </div>
-        </section>
+            <p class="text-muted-foreground leading-relaxed">
+        {{ course()?.instructor?.bio }}
+        </p>
+      </div>
+    </section>
 
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--  -->
-
-<!-- Student Reviews -->
+        <!-- REVIEWS -->
         <section>
-          <h2 class="text-2xl font-bold mb-6">Student feedback</h2>
-
+          <h2 class="text-3xl font-serif font-black mb-10">Student feedback</h2>
           <div class="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
             <div class="flex items-center gap-8 mb-6">
               <div class="text-center">
-                <div class="text-5xl font-bold mb-2">{{ course.rating }}</div>
+                <div class="text-5xl font-bold mb-2">
+                  {{ averageRating() }}
+                </div>
                 <div class="flex items-center justify-center mb-1">
-                  <svg *ngFor="let star of [1,2,3,4,5]" class="w-5 h-5" [ngClass]="star <= course.rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted fill-muted'" viewBox="0 0 24 24">
+                  <svg *ngFor="let star of [1,2,3,4,5]" class="w-5 h-5"
+                       [ngClass]="star <= averageRating() ? 'text-yellow-400 fill-yellow-400' : 'text-muted fill-muted'"
+                       viewBox="0 0 24 24">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                   </svg>
                 </div>
-                <p class="text-sm text-muted-foreground">Course Rating</p>
+                <p class="text-sm text-muted-foreground">
+                  Course Rating
+                </p>
               </div>
-
               <div class="flex-1 space-y-2">
                 <div *ngFor="let stars of [5,4,3,2,1]" class="flex items-center gap-3">
                   <div class="flex items-center gap-2 w-24">
                     <div class="flex">
-                      <svg *ngFor="let star of [1]" class="w-4 h-4 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24">
+                      <svg *ngFor="let star of [1]" class="w-4 h-4 text-yellow-400 fill-yellow-400"
+                           viewBox="0 0 24 24">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                       </svg>
                     </div>
-                    <span class="text-sm text-muted-foreground">{{ stars }}</span>
+                    <span class="text-sm text-muted-foreground">
+                      {{ stars }}
+                    </span>
                   </div>
                   <div class="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                    <div class="h-full bg-yellow-400" [style.width.%]="getRatingPercentage(stars)"></div>
-                  </div>
-                  <span class="text-sm text-muted-foreground w-12 text-right">{{ getRatingPercentage(stars) }}%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          <div class="space-y-6">
-            <div *ngFor="let review of course.reviews" class="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
-              <div class="flex items-start gap-4 mb-4">
-                <img [src]="review.userAvatar" [alt]="review.userName" class="w-12 h-12 rounded-full object-cover">
-                <div class="flex-1">
-                  <h4 class="font-semibold mb-1">{{ review.userName }}</h4>
-                  <div class="flex items-center gap-2">
-                    <div class="flex">
-                      <svg *ngFor="let star of [1,2,3,4,5]" class="w-4 h-4" [ngClass]="star <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted fill-muted'" viewBox="0 0 24 24">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
+                    <div class="h-full bg-yellow-400" [style.width.%]="getRatingPercentage(stars)">
                     </div>
-                    <span class="text-sm text-muted-foreground">{{ formatUtils.formatDate(review.createdAt) }}</span>
+                  </div>
+                  <span class="text-sm text-muted-foreground w-12 text-right">
+                    {{ getRatingPercentage(stars) }}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- EXISTING REVIEWS -->
+          <div class="grid gap-6 mb-12 mt-8">
+            <div *ngFor="let review of course()?.reviews"
+                 class="bg-background border border-border/30 rounded-3xl p-8 shadow-sm">
+              <div class="flex gap-4 mb-3">
+                <img [src]="review.userAvatar"
+                     class="w-14 h-14 rounded-full object-cover">
+                <div>
+                  <p class="font-bold">{{ review.userName }}</p>
+                  <div class="flex gap-1">
+                    <svg *ngFor="let s of [1,2,3,4,5]"
+                         class="w-4 h-4"
+                         [ngClass]="s <= review.rating ? 'text-amber-400 fill-amber-400' : 'text-border fill-border'"
+                         viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
                   </div>
                 </div>
               </div>
-              <p class="text-sm text-muted-foreground leading-relaxed">{{ review.comment }}</p>
+              <p class="italic text-muted-foreground">
+                "{{ review.comment }}"
+              </p>
             </div>
           </div>
-        </section>
-        <!-- GIVE REVIEW -->
-        <section>
-          <div class="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
-            <h3 class="text-lg font-semibold mb-4">Leave a review</h3>
+
+          <!-- ================= GIVE REVIEW ================= -->
+          <div class="bg-background border border-border/30 rounded-3xl p-8 shadow-sm">
+            <h3 class="text-xl font-bold mb-6">Leave a review</h3>
 
             <!-- CLICKABLE STARS -->
-            <div class="flex items-center gap-1 mb-4">
+            <div class="flex items-center gap-1 mb-6">
               <button
                 *ngFor="let star of [1,2,3,4,5]"
                 type="button"
-                (mouseenter)="hoverRating = star"
-                (mouseleave)="hoverRating = 0"
+                (mouseenter)="setHoverRating(star)"
+                (mouseleave)="setHoverRating(0)"
                 (click)="setRating(star)"
                 class="transition-transform hover:scale-110"
               >
                 <svg
-                  class="w-7 h-7"
+                  class="w-8 h-8"
                   [ngClass]="
-          star <= (hoverRating || selectedRating)
-            ? 'text-yellow-400 fill-yellow-400'
-            : 'text-muted fill-muted'
-        "
+                    star <= (hoverRating() || selectedRating())
+                      ? 'text-amber-400 fill-amber-400'
+                      : 'text-border fill-border'
+                  "
                   viewBox="0 0 24 24"
                 >
-                  <path
-                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                  />
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
               </button>
             </div>
 
             <!-- TEXTAREA -->
             <textarea
-              [(ngModel)]="reviewComment"
+              [ngModel]="reviewComment()"
+              (ngModelChange)="reviewComment.set($event)"
               rows="4"
               placeholder="Share your experience..."
-              class="w-full border rounded-xl p-3 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
+              class="w-full border border-border rounded-xl p-4 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
             ></textarea>
 
             <!-- SUBMIT -->
             <button
               (click)="submitReview()"
-              [disabled]="!selectedRating"
-              class="bg-primary text-primary-foreground
-           px-6 py-2 rounded-xl
-           disabled:opacity-50
-           hover:bg-primary/90 transition"
-            >
+              [disabled]="!selectedRating()"
+              class="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-semibold disabled:opacity-50 hover:bg-primary/90 transition">
               Submit review
             </button>
           </div>
+
         </section>
 
-        <!-- Mobile Enrollment Card -->
-        <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t p-4 z-10">
-          <div class="flex items-center justify-between gap-4">
-            <div>
-              <div class="text-2xl font-bold">{{ formatUtils.formatPrice(course.price) }}</div>
-            </div>
-            <button
-              (click)="handleEnrollment()"
-              class="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold py-3 px-6 rounded-md transition-colors">
-              {{ isEnrolled ? 'Go to Course' : 'Enroll Now' }}
-            </button>
-          </div>
-        </div>
       </div>
-
-
     </div>
   </div>
- }
+
+  <!-- ================= MOBILE CTA ================= -->
+  <div class="lg:hidden fixed bottom-6 left-6 right-6 z-50">
+    <div class="bg-background/90 backdrop-blur-xl border border-border/30 rounded-3xl p-5 shadow-2xl flex justify-between items-center">
+      <span class="text-2xl font-serif font-black">{{ course()?.price }}</span>
+      <button
+        (click)="handleEnrollment()"
+        class="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold">
+        {{ isEnrolled() ? 'Open Course' : 'Enroll Now' }}
+      </button>
+    </div>
+  </div>
+
+}
+
+<!-- Loading State -->
+@if (isLoading()) {
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="text-center space-y-4">
+      <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <p class="text-muted-foreground">Loading course...</p>
+    </div>
+  </div>
+}
+
+<!-- Error State -->
+@if (error()) {
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="text-center space-y-4 max-w-md">
+      <div class="text-6xl">⚠️</div>
+      <h2 class="text-2xl font-bold">Oops! Something went wrong</h2>
+      <p class="text-muted-foreground">{{ error() }}</p>
+      <button
+        (click)="window.location.reload()"
+        class="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-semibold">
+        Try Again
+      </button>
+    </div>
+  </div>
+}

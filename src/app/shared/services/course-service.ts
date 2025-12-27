@@ -5,13 +5,14 @@ import { CourseItem } from '../models/course-item.model';
 import { CourseItemType } from '../enums/course-item-type.enum';
 import { Lesson } from '../models/lesson.model';
 import { Quiz } from '../models/quiz.model';
+import {Observable, of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CourseService {
-  getCourseDetails(courseId: string): Course {
-    return {
+  getCourseDetails(courseId: string): Observable<Course> {
+    return of({
       id: courseId,
       title: 'Sample Course',
       description: 'This is a sample course description.',
@@ -64,7 +65,7 @@ export class CourseService {
       }],
       reviews: [],
       totalReviews: 251,
-    };
+    })
   }
 
   getCourseItems(courseId: string): CourseItem[] {
