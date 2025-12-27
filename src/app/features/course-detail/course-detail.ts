@@ -1,7 +1,7 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
 import { Course } from '../../shared/models/course.model';
 import { NgClass, NgForOf, NgIf, NgOptimizedImage } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import { CourseService } from '../../shared/services/course.service';
 import { FormatUtils } from '../../shared/utils/format.utils';
 import { FormsModule } from '@angular/forms';
@@ -9,6 +9,7 @@ import { Review } from '../../shared/models/review.model';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {EnrollmentService} from '@services/enrollment.service';
 
 @Component({
   selector: 'app-course-detail',
@@ -18,7 +19,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     NgIf,
     NgClass,
     NgForOf,
-    NgOptimizedImage,
     FormsModule
   ],
   styleUrls: ['./course-detail.css']
@@ -26,6 +26,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class CourseDetailComponent {
   private route = inject(ActivatedRoute);
   private courseService = inject(CourseService);
+  private enrollmentService = inject(EnrollmentService);
+  private router = inject(Router);
+
 
   // ===== SIGNALS: UI State =====
   course = signal<Course | null>(null);
@@ -71,7 +74,6 @@ export class CourseDetailComponent {
   formatUtils = FormatUtils;
 
   constructor() {
-    // Load course with automatic cleanup
     this.route.params.pipe(
       map(params => params['courseId']),
       switchMap(id => {
@@ -98,7 +100,6 @@ export class CourseDetailComponent {
     });
   }
 
-  // ===== RATING METHODS =====
 
   setRating(rating: number): void {
     this.selectedRating.set(rating);
@@ -166,30 +167,41 @@ export class CourseDetailComponent {
   handleEnrollment(): void {
     if (this.isEnrolled()) {
       console.log("Navigating to course content...");
-      // TODO: Navigate to course content
+      this.router.navigate(['learning'])
     } else {
       console.log("Processing enrollment...");
-      // TODO: Call enrollment service
+      this.enrollmentService.enrollInCourse("userId", this.course()?.id).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.isEnrolled.set(true);
+            this.isLoading.set(false);
+
+            // 🎉 Trigger celebration!
+            this.triggerCelebration();
+            //
+            // // Update enrollment count
+            // const courseId = this.course()?.id;
+            // if (courseId) {
+            //   this.courseService.updateEnrollment(courseId, true).subscribe({
+            //     next: (updatedCourse) => {
+            //       this.course.set(updatedCourse);
+            //     }
+            //   });
+            // }
+          }
+        },
+        error: (err) => {
+          console.error('Enrollment failed:', err);
+          this.error.set('Failed to enroll. Please try again.');
+          this.isLoading.set(false);
+        }
+      });
       this.isEnrolled.set(true);
     }
   }
 
-  shareContent(): void {
-    console.log("Sharing course...");
-    // TODO: Implement share functionality
-  }
 
-  // ===== UTILITY METHODS =====
 
-  getModuleDuration(moduleId: string): number {
-    const c = this.course();
-    if (!c) return 0;
-
-    const module = c.modules.find(m => m.id === moduleId);
-    if (!module) return 0;
-
-    return module.lessons.reduce((sum, lesson) => sum + lesson.duration, 0);
-  }
 
   getRatingPercentage(stars: number): number {
     const c = this.course();
@@ -201,11 +213,27 @@ export class CourseDetailComponent {
     return Number(((count / total) * 100).toFixed(2));
   }
 
-  onImgError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    img.onerror = null; // Prevent infinite loop
-    img.src = '/assets/placeholder-course.png'; // Fallback image
+  showCelebration = signal(false);
+
+  triggerCelebration(): void {
+    console.log("Celebration triggered!");
+    this.showCelebration.set(true);
+
+    // Optional: Play sound
+    try {
+      const audio = new Audio('/assets/sounds/success.mp3');
+      audio.volume = 0.5;
+      audio.play();
+    } catch (e) {
+      console.log('Audio failed:', e);
+    }
+
+    // Hide after 4 seconds
+    setTimeout(() => {
+      this.showCelebration.set(false);
+    }, 4000);
   }
+
 
   protected readonly window = window;
 }
