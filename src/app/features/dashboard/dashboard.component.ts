@@ -4,8 +4,7 @@
 import { Component, OnInit, OnDestroy, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 
 // Services
 import { DashboardService } from './services/dashboard.service';
@@ -15,15 +14,17 @@ import { ActivityService } from './services/activity.service';
 
 // Components
 import { StatsCardComponent } from './components/stats-card/stats-card.component';
-
-// Models
-import { DashboardStats } from './models/dashboard-stats.model';
-import { EnrolledCourse } from './models/enrolled-course.model';
-import { CourseCardComponent } from '@components/course-card/course-card';
+import { CourseCardComponent } from './components/course-card/course-card.component'; // <-- fixed relative path
 import { ActivityFeedComponent } from './components/activity-feed/activity-feed.component';
 import { CertificateCardComponent } from './components/certificate-card/certificate-card.component';
 import { CourseOverviewComponent } from './components/course-overview/course-overview.component';
 import { ProgressChartComponent } from './components/progress-chart/progress-chart.component';
+
+// Models
+import { DashboardStats } from './models/dashboard-stats.model';
+import { EnrolledCourse } from './models/enrolled-course.model';
+import { Activity } from './models/activity.model';
+import { Certificate } from './models/certificate.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -41,7 +42,7 @@ import { ProgressChartComponent } from './components/progress-chart/progress-cha
   styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  // ✅ Inject services using inject()
+  // Keep services injected so you can use them later (DI exercise)
   private dashboardService = inject(DashboardService);
   private progressService = inject(ProgressService);
   private certificateService = inject(CertificateService);
@@ -50,37 +51,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  // ✅ Convert Observables to Signals using toSignal()
-  stats = toSignal(this.dashboardService.stats$, {
-    initialValue: null,
-  });
+  // ---- Mocked signals (UI will use these) ----
+  stats = signal<DashboardStats | null>(null);
+  courses = signal<EnrolledCourse[]>([]);
+  activities = signal<Activity[]>([]);
+  certificates = signal<Certificate[]>([]);
+  loading = signal<boolean>(true);
+  error = signal<string | null>(null);
 
-  courses = toSignal(this.dashboardService.courses$, {
-    initialValue: [],
-  });
-
-  activities = toSignal(this.activityService.getRecentActivities(5), {
-    initialValue: [],
-  });
-
-  certificates = toSignal(this.certificateService.certificates$, {
-    initialValue: [],
-  });
-
-  loading = toSignal(this.dashboardService.loading$, {
-    initialValue: false,
-  });
-
-  error = toSignal(this.dashboardService.error$, {
-    initialValue: null,
-  });
-
-  // ✅ Local signals for component state
+  // Local state
   selectedPeriod = signal<'week' | 'month'>('week');
   learningData = signal<any[]>([]);
-  currentUser = signal({ name: 'Student' }); // TODO: Get from AuthService
+  currentUser = signal({ name: 'Student' });
 
-  // ✅ Computed signals for derived data
+  // Computed signals (use same names as template)
   inProgressCourses = computed(() =>
     this.courses().filter((c) => c.progress > 0 && c.progress < 100)
   );
@@ -98,14 +82,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   totalHoursThisWeek = computed(() => {
     const data = this.learningData();
     if (data.length === 0) return 0;
-
-    return data.reduce((sum, item) => sum + (item.hours || 0), 0);
+    return data.reduce((sum, item) => sum + (item.hoursLearned || 0), 0);
   });
 
   upcomingDeadlines = computed(() => {
     const now = new Date();
     const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-
     return this.inProgressCourses()
       .filter((course) => course.dueDate && new Date(course.dueDate) <= threeDaysFromNow)
       .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
@@ -114,7 +96,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   urgentCourses = computed(() => {
     const now = new Date();
     const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-
     return this.inProgressCourses().filter(
       (course) => course.dueDate && new Date(course.dueDate) <= tomorrow
     );
@@ -122,15 +103,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   recentCertificates = computed(() => this.certificates().slice(0, 3));
 
+  // --------------------
   ngOnInit(): void {
-    this.loadDashboardData();
-    this.loadCertificates();
-    this.loadLearningData();
-
-    // TODO: Set up user info
-    // this.authService.currentUser$.subscribe(user => {
-    //   this.currentUser.set(user);
-    // });
+    // Initialize UI with mocked data so the dashboard is immediately usable for UI exercises.
+    this.setupMockData();
+    // mark loading done
+    this.loading.set(false);
   }
 
   ngOnDestroy(): void {
@@ -138,143 +116,223 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  /**
-   * Load all dashboard data
-   */
-  loadDashboardData(): void {
-    this.dashboardService
-      .loadDashboardData()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => {
-          console.log('Dashboard data loaded', data);
-        },
-        error: (err) => {
-          console.error('Error loading dashboard:', err);
-        },
-      });
+  // --------------------
+  private setupMockData(): void {
+    // Simple stats
+    this.stats.set({
+      coursesCompleted: 4,
+      coursesInProgress: 3,
+      hoursLearned: 14 * 3600, // seconds
+      certificatesEarned: 2,
+      currentStreak: 5,
+      totalCourses: 12,
+      averageRating: 4.7,
+    });
+
+    // Mock courses (shallow objects; expand later as you implement models/services)
+    const now = new Date();
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const in3Days = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+
+    const mockCourses: EnrolledCourse[] = [
+      {
+        course: {
+          id: 'c1',
+          title: 'Angular Fundamentals',
+          instructorId: 'Jane Doe',
+          thumbnail: 'https://picsum.photos/seed/angular/600/400',
+          level: 'BEGINNER',
+          durationInSeconds: 4 * 3600,
+        } as any,
+        enrollmentId: 'e1',
+        enrolledDate: new Date(),
+        progress: 35,
+        lastAccessedDate: now,
+        nextLesson: 'Components & Templates',
+        completedLessons: 7,
+        completedQuizzes: 1,
+        timeSpentInSeconds: 3600,
+        dueDate: in3Days,
+        status: 'IN_PROGRESS' as any,
+      },
+      {
+        course: {
+          id: 'c2',
+          title: 'TypeScript Deep Dive',
+          instructorId: 'John Smith',
+          thumbnail: 'https://picsum.photos/seed/ts/600/400',
+          level: 'INTERMEDIATE',
+          durationInSeconds: 6 * 3600,
+        } as any,
+        enrollmentId: 'e2',
+        enrolledDate: new Date(),
+        progress: 72,
+        lastAccessedDate: now,
+        nextLesson: 'Generics',
+        completedLessons: 18,
+        completedQuizzes: 3,
+        timeSpentInSeconds: 2 * 3600,
+        dueDate: tomorrow,
+        status: 'IN_PROGRESS' as any,
+      },
+      {
+        course: {
+          id: 'c3',
+          title: 'CSS for Developers',
+          instructorId: 'Alice Lee',
+          thumbnail: 'https://picsum.photos/seed/css/600/400',
+          level: 'BEGINNER',
+          durationInSeconds: 2 * 3600,
+        } as any,
+        enrollmentId: 'e3',
+        enrolledDate: new Date(),
+        progress: 100,
+        lastAccessedDate: now,
+        nextLesson: '—',
+        completedLessons: 12,
+        completedQuizzes: 2,
+        timeSpentInSeconds: 2 * 3600,
+        status: 'COMPLETED' as any,
+      },
+    ];
+    this.courses.set(mockCourses);
+
+    // Mock activities
+    const mockActivities: Activity[] = [
+      {
+        id: 'a1',
+        userId: 'u1',
+        type: 'QUIZ_COMPLETED' as any,
+        title: 'Completed Quiz: Angular Basics',
+        description: 'Scored 85% on Angular Basics quiz',
+        courseName: 'Angular Fundamentals',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2h ago
+        metadata: { score: 85 },
+      },
+      {
+        id: 'a2',
+        userId: 'u1',
+        type: 'LESSON_COMPLETED' as any,
+        title: 'Finished lesson: Components & Templates',
+        description: '',
+        courseName: 'Angular Fundamentals',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1d ago
+      },
+      {
+        id: 'a3',
+        userId: 'u1',
+        type: 'CERTIFICATE_EARNED' as any,
+        title: 'Earned certificate: CSS for Developers',
+        description: '',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48), // 2d ago
+      },
+    ];
+    this.activities.set(mockActivities);
+
+    // Mock certificates
+    const mockCertificates: Certificate[] = [
+      {
+        id: 'cert1',
+        userId: 'u1',
+        courseId: 'c3',
+        courseTitle: 'CSS for Developers',
+        instructorName: 'Alice Lee',
+        issueDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
+        credentialId: 'ABC-123',
+        certificateUrl: '#',
+        thumbnailUrl: 'https://picsum.photos/seed/cert1/600/400',
+        verificationUrl: '#',
+        grade: 92,
+        skills: ['CSS', 'Responsive Design'],
+      } as any,
+      {
+        id: 'cert2',
+        userId: 'u1',
+        courseId: 'c4',
+        courseTitle: 'HTML Advanced',
+        instructorName: 'Bob',
+        issueDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 90),
+        credentialId: 'DEF-456',
+        certificateUrl: '#',
+        thumbnailUrl: 'https://picsum.photos/seed/cert2/600/400',
+        verificationUrl: '#',
+        grade: 88,
+        skills: ['HTML', 'Accessibility'],
+      } as any,
+    ];
+    this.certificates.set(mockCertificates);
+
+    // Mock learning data for the progress chart
+    const mockLearning = Array.from({ length: 7 }).map((_, i) => {
+      const day = new Date();
+      day.setDate(day.getDate() - (6 - i));
+      return {
+        date: day,
+        hoursLearned: Math.round(Math.random() * 3),
+        lessonsCompleted: Math.floor(Math.random() * 3),
+      };
+    });
+    this.learningData.set(mockLearning);
   }
 
-  /**
-   * Load certificates
-   */
-  loadCertificates(): void {
-    this.certificateService
-      .loadCertificates()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        error: (err) => console.error('Error loading certificates:', err),
-      });
-  }
-
-  /**
-   * Load learning data for charts
-   */
-  loadLearningData(): void {
-    this.progressService
-      .getLearningData(this.selectedPeriod())
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => {
-          this.learningData.set(data);
-        },
-        error: (err) => console.error('Error loading learning data:', err),
-      });
-  }
-
-  /**
-   * Handle period change for learning chart
-   */
+  // --------------------
+  // UI action stubs - keep these so you can implement real behaviour later
   onPeriodChange(period: 'week' | 'month'): void {
     this.selectedPeriod.set(period);
-    this.loadLearningData();
+    // hint: call progressService.getLearningData(period) and set learningData
   }
 
-  /**
-   * Navigate to course detail
-   */
   onContinueCourse(courseId: string): void {
+    // hint: navigate to course detail or player
     this.router.navigate(['/courses', courseId]);
   }
 
-  /**
-   * Navigate to course player
-   */
   onPlayCourse(courseId: string): void {
     this.router.navigate(['/player', courseId]);
   }
 
-  /**
-   * Download certificate
-   */
   onDownloadCertificate(certificateId: string): void {
-    this.certificateService
-      .downloadCertificate(certificateId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => console.log('Certificate downloaded'),
-        error: (err) => console.error('Error downloading certificate:', err),
-      });
+    // hint: call certificateService.downloadCertificate(certificateId)
+    console.log('download certificate', certificateId);
   }
 
-  /**
-   * View all courses
-   */
   viewAllCourses(): void {
     this.router.navigate(['/courses']);
   }
 
-  /**
-   * View all certificates
-   */
   viewAllCertificates(): void {
     this.router.navigate(['/dashboard/certificates']);
   }
 
-  /**
-   * View all activities
-   */
   viewAllActivities(): void {
     this.router.navigate(['/dashboard/activities']);
   }
 
-  /**
-   * Refresh dashboard data
-   */
   refreshDashboard(): void {
-    this.loadDashboardData();
-    this.loadCertificates();
-    this.loadLearningData();
+    // Keep simple for now: re-setup mocks so the UI changes
+    this.loading.set(true);
+    setTimeout(() => {
+      this.setupMockData();
+      this.loading.set(false);
+    }, 300);
   }
 
-  /**
-   * Clear error message
-   */
   clearError(): void {
-    this.dashboardService.clearError();
+    this.error.set(null);
   }
 
-  /**
-   * Navigate to course by deadline urgency
-   */
   goToUrgentCourse(): void {
     const urgent = this.urgentCourses();
     if (urgent.length > 0) {
-      this.onContinueCourse(urgent[0].course.id);
+      this.onContinueCourse(urgent[0].course.id as string);
     }
   }
 
-  /**
-   * Format hours for display
-   */
   formatHours(seconds: number): string {
     const hours = Math.floor(seconds / 3600);
     return `${hours}h`;
   }
 
-  /**
-   * Calculate time remaining
-   */
   getTimeRemaining(dueDate: Date): string {
     const now = new Date();
     const diff = new Date(dueDate).getTime() - now.getTime();

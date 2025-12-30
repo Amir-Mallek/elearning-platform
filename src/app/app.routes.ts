@@ -10,4 +10,9 @@ export const routes: Routes = [
     path: 'quiz',
     loadChildren: () => import('@features/quiz/quiz.routes').then((m) => m.QUIZ_ROUTES),
   },
+  {
+    path: 'dashboard',
+    loadChildren: () =>
+      import('@features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
+  },
 ];

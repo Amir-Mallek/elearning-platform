@@ -31,6 +31,14 @@ export class CourseCardComponent {
     return `${minutes}m`;
   }
 
+  // Provide a typed-safe thumbnail accessor to avoid template errors
+  get thumbnail(): string {
+    return (
+      ((this.enrolledCourse?.course as any)?.thumbnail as string) ||
+      'https://via.placeholder.com/150x100'
+    );
+  }
+
   getTimeRemaining(): string {
     if (!this.enrolledCourse.dueDate) return '';
 

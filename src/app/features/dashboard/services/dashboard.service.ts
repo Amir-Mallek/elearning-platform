@@ -1,168 +1,158 @@
-import { Injectable, signal } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject, combineLatest, interval } from 'rxjs';
-import { map, shareReplay, switchMap, tap, catchError } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { delay, tap } from 'rxjs/operators';
 import { DashboardStats } from '../models/dashboard-stats.model';
 import { EnrolledCourse } from '../models/enrolled-course.model';
 import { Activity } from '../models/activity.model';
 import { DashboardSummary } from '../models/dashboard-summary.model';
+import { Certificate } from '../models/certificate.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DashboardService {
-  private readonly apiUrl = '/api/dashboard';
-
-  // ✅ RxJS BehaviorSubjects for reactive state management
   private statsSubject = new BehaviorSubject<DashboardStats | null>(null);
   private coursesSubject = new BehaviorSubject<EnrolledCourse[]>([]);
   private activitiesSubject = new BehaviorSubject<Activity[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private errorSubject = new BehaviorSubject<string | null>(null);
+  private certificatesSubject = new BehaviorSubject<Certificate[]>([]);
 
-  // ✅ Public observables
   readonly stats$ = this.statsSubject.asObservable();
   readonly courses$ = this.coursesSubject.asObservable();
   readonly activities$ = this.activitiesSubject.asObservable();
   readonly loading$ = this.loadingSubject.asObservable();
   readonly error$ = this.errorSubject.asObservable();
+  readonly certificates$ = this.certificatesSubject.asObservable();
 
-  // ✅ Derived observables using RxJS operators
-  readonly inProgressCourses$ = this.courses$.pipe(
-    map((courses) => courses.filter((c) => c.progress > 0 && c.progress < 100)),
-    shareReplay(1)
-  );
+  constructor() {}
 
-  readonly completedCourses$ = this.courses$.pipe(
-    map((courses) => courses.filter((c) => c.progress === 100)),
-    shareReplay(1)
-  );
-
-  readonly upcomingDeadlines$ = this.courses$.pipe(
-    map((courses) => {
-      const now = new Date();
-      const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-      return courses
-        .filter((c) => c.dueDate && new Date(c.dueDate) <= threeDaysFromNow && c.progress < 100)
-        .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime());
-    }),
-    shareReplay(1)
-  );
-
-  // ✅ Auto-refresh every 5 minutes
-  private autoRefresh$ = interval(300000).pipe(switchMap(() => this.loadDashboardData()));
-
-  constructor(private http: HttpClient) {
-    // TODO: Uncomment to enable auto-refresh
-    // this.autoRefresh$.subscribe();
-  }
-
-  /**
-   * Load complete dashboard data
-   * Combines multiple API calls into a single operation
-   */
+  // Return a mocked DashboardSummary and populate internal subjects
   loadDashboardData(): Observable<DashboardSummary> {
     this.loadingSubject.next(true);
-    this.errorSubject.next(null);
+    const now = new Date();
+    const in3Days = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-    return this.http.get<DashboardSummary>(`${this.apiUrl}/summary`).pipe(
-      tap((data) => {
-        this.statsSubject.next(data.stats);
-        this.coursesSubject.next(data.enrolledCourses);
-        this.activitiesSubject.next(data.recentActivities);
+    const stats: DashboardStats = {
+      coursesCompleted: 4,
+      coursesInProgress: 3,
+      hoursLearned: 14 * 3600,
+      certificatesEarned: 2,
+      currentStreak: 5,
+      totalCourses: 12,
+      averageRating: 4.7,
+    };
+
+    const courses: EnrolledCourse[] = [
+      {
+        course: {
+          id: 'c1',
+          title: 'Angular Fundamentals',
+          instructorId: 'Jane Doe',
+          thumbnail: 'https://picsum.photos/seed/angular/600/400',
+          level: 'BEGINNER',
+          durationInSeconds: 4 * 3600,
+        } as any,
+        enrollmentId: 'e1',
+        enrolledDate: now,
+        progress: 35,
+        lastAccessedDate: now,
+        nextLesson: 'Components & Templates',
+        completedLessons: 7,
+        completedQuizzes: 1,
+        timeSpentInSeconds: 3600,
+        dueDate: in3Days,
+        status: 'IN_PROGRESS' as any,
+      },
+      {
+        course: {
+          id: 'c2',
+          title: 'TypeScript Deep Dive',
+          instructorId: 'John Smith',
+          thumbnail: 'https://picsum.photos/seed/ts/600/400',
+          level: 'INTERMEDIATE',
+          durationInSeconds: 6 * 3600,
+        } as any,
+        enrollmentId: 'e2',
+        enrolledDate: now,
+        progress: 72,
+        lastAccessedDate: now,
+        nextLesson: 'Generics',
+        completedLessons: 18,
+        completedQuizzes: 3,
+        timeSpentInSeconds: 2 * 3600,
+        dueDate: tomorrow,
+        status: 'IN_PROGRESS' as any,
+      },
+    ];
+
+    const activities: Activity[] = [
+      {
+        id: 'a1',
+        userId: 'u1',
+        type: 'QUIZ_COMPLETED' as any,
+        title: 'Completed Quiz: Angular Basics',
+        description: 'Scored 85% on Angular Basics quiz',
+        courseName: 'Angular Fundamentals',
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+        metadata: { score: 85 },
+      },
+    ];
+
+    const certificates: Certificate[] = [
+      {
+        id: 'cert1',
+        userId: 'u1',
+        courseId: 'c3',
+        courseTitle: 'CSS for Developers',
+        instructorName: 'Alice Lee',
+        issueDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
+        credentialId: 'ABC-123',
+        certificateUrl: '#',
+        thumbnailUrl: 'https://picsum.photos/seed/cert1/600/400',
+        verificationUrl: '#',
+        grade: 92,
+        skills: ['CSS', 'Responsive Design'],
+      } as any,
+    ];
+
+    const mockSummary: DashboardSummary = {
+      stats,
+      enrolledCourses: courses,
+      recentActivities: activities,
+      certificates,
+      learningData: [],
+      achievements: [],
+      upcomingDeadlines: courses,
+    };
+
+    // simulate network and populate subjects
+    return of(mockSummary).pipe(
+      delay(150),
+      tap((summary) => {
+        this.statsSubject.next(summary.stats);
+        this.coursesSubject.next(summary.enrolledCourses);
+        this.activitiesSubject.next(summary.recentActivities);
+        this.certificatesSubject.next(summary.certificates);
         this.loadingSubject.next(false);
-      }),
-      catchError((error) => {
-        this.errorSubject.next('Failed to load dashboard data');
-        this.loadingSubject.next(false);
-        throw error;
       })
     );
   }
 
-  /**
-   * Load dashboard statistics
-   */
-  loadStats(): Observable<DashboardStats> {
-    return this.http
-      .get<DashboardStats>(`${this.apiUrl}/stats`)
-      .pipe(tap((stats) => this.statsSubject.next(stats)));
+  loadStats() {
+    return of(this.statsSubject.value).pipe(delay(50));
   }
 
-  /**
-   * Load enrolled courses for the current user
-   */
-  loadEnrolledCourses(params?: {
-    status?: string;
-    limit?: number;
-    offset?: number;
-  }): Observable<EnrolledCourse[]> {
-    let httpParams = new HttpParams();
-
-    if (params?.status) httpParams = httpParams.set('status', params.status);
-    if (params?.limit) httpParams = httpParams.set('limit', params.limit.toString());
-    if (params?.offset) httpParams = httpParams.set('offset', params.offset.toString());
-
-    return this.http
-      .get<EnrolledCourse[]>(`${this.apiUrl}/courses`, { params: httpParams })
-      .pipe(tap((courses) => this.coursesSubject.next(courses)));
+  loadEnrolledCourses() {
+    return of(this.coursesSubject.value).pipe(delay(50));
   }
 
-  /**
-   * Load recent activities
-   */
-  loadActivities(limit = 10): Observable<Activity[]> {
-    return this.http
-      .get<Activity[]>(`${this.apiUrl}/activities`, {
-        params: { limit: limit.toString() },
-      })
-      .pipe(tap((activities) => this.activitiesSubject.next(activities)));
+  loadActivities(limit = 10) {
+    return of(this.activitiesSubject.value.slice(0, limit)).pipe(delay(60));
   }
 
-  /**
-   * Get a specific enrolled course
-   */
-  getEnrolledCourse(courseId: string): Observable<EnrolledCourse> {
-    return this.http.get<EnrolledCourse>(`${this.apiUrl}/courses/${courseId}`);
-  }
-
-  /**
-   * Update course progress
-   */
-  updateCourseProgress(courseId: string, progress: number): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/courses/${courseId}/progress`, {
-      progress,
-    });
-  }
-
-  /**
-   * Mark lesson as completed
-   */
-  markLessonCompleted(courseId: string, lessonId: string): Observable<void> {
-    return this.http.post<void>(
-      `${this.apiUrl}/courses/${courseId}/lessons/${lessonId}/complete`,
-      {}
-    );
-  }
-
-  /**
-   * Get learning streak data
-   */
-  getStreakData(): Observable<{ currentStreak: number; longestStreak: number }> {
-    return this.http.get<{ currentStreak: number; longestStreak: number }>(`${this.apiUrl}/streak`);
-  }
-
-  /**
-   * Refresh all dashboard data
-   */
-  refresh(): void {
-    this.loadDashboardData().subscribe();
-  }
-
-  /**
-   * Reset error state
-   */
-  clearError(): void {
+  clearError() {
     this.errorSubject.next(null);
   }
 }

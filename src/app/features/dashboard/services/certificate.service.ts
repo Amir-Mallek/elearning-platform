@@ -1,98 +1,91 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { tap, delay } from 'rxjs/operators';
 import { Certificate } from '../models/certificate.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CertificateService {
-  private readonly apiUrl = '/api/certificates';
-
   private certificatesSubject = new BehaviorSubject<Certificate[]>([]);
   readonly certificates$ = this.certificatesSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
-  /**
-   * Load all certificates for the current user
-   */
+  // Return mocked certificates for UI/testing
   loadCertificates(): Observable<Certificate[]> {
-    return this.http.get<Certificate[]>(this.apiUrl).pipe(
-      tap((certs) => this.certificatesSubject.next(certs)),
-      map((certs: any[]) =>
-        certs.map(
-          (cert: { issueDate: string | number | Date; expiryDate: string | number | Date }) => ({
-            ...cert,
-            issueDate: new Date(cert.issueDate),
-            expiryDate: cert.expiryDate ? new Date(cert.expiryDate) : undefined,
-          })
-        )
-      )
+    const mock: Certificate[] = [
+      {
+        id: 'cert1',
+        userId: 'u1',
+        courseId: 'c3',
+        courseTitle: 'CSS for Developers',
+        instructorName: 'Alice Lee',
+        issueDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
+        credentialId: 'ABC-123',
+        certificateUrl: '#',
+        thumbnailUrl: 'https://picsum.photos/seed/cert1/600/400',
+        verificationUrl: '#',
+        expiryDate: undefined,
+        grade: 92,
+        skills: ['CSS', 'Responsive Design'],
+      },
+      {
+        id: 'cert2',
+        userId: 'u1',
+        courseId: 'c4',
+        courseTitle: 'HTML Advanced',
+        instructorName: 'Bob',
+        issueDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 90),
+        credentialId: 'DEF-456',
+        certificateUrl: '#',
+        thumbnailUrl: 'https://picsum.photos/seed/cert2/600/400',
+        verificationUrl: '#',
+        expiryDate: undefined,
+        grade: 88,
+        skills: ['HTML', 'Accessibility'],
+      },
+    ];
+
+    // simulate network latency and push into subject
+    return of(mock).pipe(
+      delay(150),
+      tap((certs) => this.certificatesSubject.next(certs))
     );
   }
 
-  /**
-   * Get a specific certificate
-   */
-  getCertificate(certificateId: string): Observable<Certificate> {
-    return this.http.get<Certificate>(`${this.apiUrl}/${certificateId}`);
-  }
-
-  /**
-   * Download certificate as PDF
-   */
+  // Keep an API-compatible method for download — returns a Blob (mock) and triggers browser download
   downloadCertificate(certificateId: string): Observable<Blob> {
-    return this.http
-      .get(`${this.apiUrl}/${certificateId}/download`, {
-        responseType: 'blob',
-      })
-      .pipe(
-        tap((blob) => {
-          // TODO: Trigger download in browser
-          const url = window.URL.createObjectURL(blob);
+    const blob = new Blob([`Certificate PDF content for ${certificateId}`], {
+      type: 'application/pdf',
+    });
+
+    return of(blob).pipe(
+      delay(100),
+      tap((b) => {
+        // optional: trigger client download (useful for UI testing)
+        try {
+          const url = window.URL.createObjectURL(b);
           const a = document.createElement('a');
           a.href = url;
           a.download = `certificate-${certificateId}.pdf`;
           a.click();
           window.URL.revokeObjectURL(url);
-        })
-      );
+        } catch {
+          // ignore in non-browser environments
+        }
+      })
+    );
   }
 
-  /**
-   * Get certificate by course ID
-   */
-  getCertificateByCourse(courseId: string): Observable<Certificate | null> {
-    return this.http.get<Certificate | null>(`${this.apiUrl}/course/${courseId}`);
+  getCertificate(certificateId: string): Observable<Certificate | null> {
+    const current = this.certificatesSubject.value.find((c) => c.id === certificateId) ?? null;
+    return of(current).pipe(delay(50));
   }
 
-  /**
-   * Verify certificate authenticity
-   */
-  verifyCertificate(credentialId: string): Observable<{
-    isValid: boolean;
-    certificate?: Certificate;
-  }> {
-    return this.http.get<any>(`${this.apiUrl}/verify/${credentialId}`);
-  }
-
-  /**
-   * Share certificate (get shareable link)
-   */
-  shareCertificate(certificateId: string): Observable<{ shareUrl: string }> {
-    return this.http.post<{ shareUrl: string }>(`${this.apiUrl}/${certificateId}/share`, {});
-  }
-
-  /**
-   * Get certificate statistics
-   */
-  getCertificateStats(): Observable<{
-    totalEarned: number;
-    recentCertificates: Certificate[];
-    expiringCertificates: Certificate[];
-  }> {
-    return this.http.get<any>(`${this.apiUrl}/stats`);
+  // Helper to add certificates during UI testing
+  addMockCertificate(cert: Certificate): void {
+    const next = [...this.certificatesSubject.value, cert];
+    this.certificatesSubject.next(next);
   }
 }

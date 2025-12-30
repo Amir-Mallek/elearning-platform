@@ -1,157 +1,63 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map, scan, startWith } from 'rxjs/operators';
-import {
-  LearningData,
-  WeeklyLearningData,
-  MonthlyLearningData,
-  ProgressTrend,
-} from '../models/learning-data.model';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
+import { LearningData } from '../models/learning-data.model';
 import { CourseProgress } from '../models/progress.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProgressService {
-  private readonly apiUrl = '/api/progress';
+  constructor() {}
 
-  constructor(private http: HttpClient) {}
+  // Return mock learning data for 'week' or 'month'
+  getLearningData(period: 'week' | 'month' | 'year' = 'week'): Observable<LearningData[]> {
+    const now = new Date();
 
-  /**
-   * Get learning data for charts
-   */
-  getLearningData(period: 'week' | 'month' | 'year'): Observable<LearningData[]> {
-    return this.http
-      .get<LearningData[]>(`${this.apiUrl}/learning-data`, {
-        params: { period },
-      })
-      .pipe(
-        map((data) =>
-          data.map((item) => ({
-            ...item,
-            date: new Date(item.date),
-          }))
-        )
-      );
-  }
+    if (period === 'week') {
+      const mockWeek: LearningData[] = Array.from({ length: 7 }).map((_, i) => {
+        const day = new Date(now);
+        day.setDate(now.getDate() - (6 - i));
+        return {
+          date: day,
+          hoursLearned: Math.round(Math.random() * 3),
+          lessonsCompleted: Math.floor(Math.random() * 3),
+          quizzesCompleted: Math.round(Math.random() * 1),
+          coursesAccessed: Math.floor(Math.random() * 2),
+        };
+      });
+      return of(mockWeek).pipe(delay(100));
+    }
 
-  /**
-   * Get weekly learning summary
-   */
-  getWeeklyData(): Observable<WeeklyLearningData[]> {
-    return this.http.get<WeeklyLearningData[]>(`${this.apiUrl}/weekly`).pipe(
-      map((data) =>
-        data.map((week) => ({
-          ...week,
-          startDate: new Date(week.startDate),
-          endDate: new Date(week.endDate),
-        }))
-      )
-    );
-  }
-
-  /**
-   * Get monthly learning summary
-   */
-  getMonthlyData(): Observable<MonthlyLearningData[]> {
-    return this.http.get<MonthlyLearningData[]>(`${this.apiUrl}/monthly`);
-  }
-
-  /**
-   * Get progress trend with cumulative data
-   */
-  getProgressTrend(days = 30): Observable<ProgressTrend[]> {
-    return this.http
-      .get<any[]>(`${this.apiUrl}/trend`, {
-        params: { days: days.toString() },
-      })
-      .pipe(
-        map((data) =>
-          data.map((item) => ({
-            date: new Date(item.date),
-            dailyHours: item.hours,
-            dailyLessons: item.lessons,
-            cumulativeHours: 0,
-            cumulativeLessons: 0,
-          }))
-        ),
-        // ✅ Use scan to calculate cumulative values
-        scan((acc, curr) => {
-          return curr.map((item, index) => {
-            const prevCumulative =
-              index > 0
-                ? curr[index - 1]
-                : acc.length > 0
-                ? acc[acc.length - 1]
-                : { cumulativeHours: 0, cumulativeLessons: 0 };
-
-            return {
-              ...item,
-              cumulativeHours: prevCumulative.cumulativeHours + item.dailyHours,
-              cumulativeLessons: prevCumulative.cumulativeLessons + item.dailyLessons,
-            };
-          });
-        }, [] as ProgressTrend[])
-      );
-  }
-
-  /**
-   * Get course-specific progress
-   */
-  getCourseProgress(courseId: string): Observable<CourseProgress> {
-    return this.http.get<CourseProgress>(`${this.apiUrl}/courses/${courseId}`);
-  }
-
-  /**
-   * Calculate learning streak
-   */
-  calculateStreak(): Observable<{ currentStreak: number; longestStreak: number }> {
-    return this.http.get<any[]>(`${this.apiUrl}/daily-activity`).pipe(
-      map((activities) => {
-        let currentStreak = 0;
-        let longestStreak = 0;
-        let tempStreak = 0;
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        // TODO: Implement streak calculation logic
-        // Sort activities by date descending
-        // Check for consecutive days
-        // Update currentStreak and longestStreak
-
-        return { currentStreak, longestStreak };
-      })
-    );
-  }
-
-  /**
-   * Get total hours learned
-   */
-  getTotalHoursLearned(): Observable<number> {
-    return this.http
-      .get<{ totalHours: number }>(`${this.apiUrl}/total-hours`)
-      .pipe(map((response) => response.totalHours));
-  }
-
-  /**
-   * Get progress summary for a specific period
-   */
-  getProgressSummary(
-    startDate: Date,
-    endDate: Date
-  ): Observable<{
-    totalHours: number;
-    totalLessons: number;
-    totalQuizzes: number;
-    averageSessionTime: number;
-  }> {
-    return this.http.get<any>(`${this.apiUrl}/summary`, {
-      params: {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-      },
+    // simple monthly aggregation (4 weeks)
+    const mockMonth: LearningData[] = Array.from({ length: 4 }).map((_, i) => {
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - (3 - i) * 7);
+      return {
+        date: weekStart,
+        hoursLearned: Math.round(Math.random() * 12),
+        lessonsCompleted: Math.floor(Math.random() * 10),
+        quizzesCompleted: Math.floor(Math.random() * 3),
+        coursesAccessed: Math.floor(Math.random() * 4),
+      };
     });
+    return of(mockMonth).pipe(delay(150));
   }
+
+  // Mocked course progress for UI
+  getCourseProgress(courseId: string): Observable<CourseProgress> {
+    const mock: CourseProgress = {
+      courseId,
+      totalLessons: 20,
+      completedLessons: 7,
+      totalQuizzes: 3,
+      completedQuizzes: 1,
+      progressPercentage: 35,
+      estimatedTimeRemaining: 3 * 3600,
+      lastActivityDate: new Date(),
+    };
+    return of(mock).pipe(delay(80));
+  }
+
+  // Keep other methods as stubs to implement later (e.g. calculateStreak)
 }
