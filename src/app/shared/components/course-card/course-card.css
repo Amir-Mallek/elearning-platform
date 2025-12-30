@@ -1,6 +1,35 @@
-.course-card {
-  background: #d4b4b4;
-  border-radius: 4px;
-  padding: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+/* Card Flip Animation */
+.flip-card {
+  perspective: 1800px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.35s ease-in-out;
+  will-change: transform;
+}
+
+.flip-card-inner--front {
+  transform: rotateY(0deg);
+}
+
+.flip-card-inner--back {
+  transform: rotateY(180deg);
+}
+
+.flip-card-face {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
 }

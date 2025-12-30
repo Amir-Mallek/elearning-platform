@@ -46,7 +46,7 @@
         @if (view === 'list') {
         <section class="space-y-4">
           @for (course of pagedCourses; track course.id) {
-          <app-course-card [course]="course" viewMode="list"></app-course-card>
+          <app-course-card [course]="course" viewMode="list" ></app-course-card>
           }
         </section>
         }

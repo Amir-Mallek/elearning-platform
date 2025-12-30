@@ -11,5 +11,12 @@ import { Course } from '@models/course.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CourseCardComponent {
-  @Input() course!: Course;
+  @Input() course!: Course ;
+  @Input() viewMode: 'grid' | 'list' = 'grid';
+
+  showBack = false;
+
+  toggleDetails(): void {
+    this.showBack = !this.showBack;
+  }
 }
