@@ -11,22 +11,21 @@ import { Review } from '@models/review.model';
 })
 export class CourseService {
   // ✅ This is your single source of truth - all changes happen here
-  private courses: Course[] = [...mockCourses as Course[]];
+  private courses: Course[] = [...(mockCourses as Course[])];
 
   getCourses(): Course[] {
-    return this.courses;  // ✅ Changed from mockCourses
+    return this.courses; // ✅ Changed from mockCourses
   }
-
 
   getCourseItems(courseId: string): CourseItem[] {
     return mockCourseItems as CourseItem[];
   }
 
-
   getCourseDetails(courseId: string): Observable<Course> {
-    console.log("Getting course details for:", courseId);
+    console.log('Getting course details for:', courseId);
 
-    const course = this.courses.find(c => c.id === courseId);  // ✅ Changed from mockCourses
+    const course = this.courses.find((c) => c.id === courseId); // ✅ Changed from mockCourses
+    console.log(course);
 
     if (!course) {
       return throwError(() => new Error(`Course with ID ${courseId} not found`));
@@ -35,9 +34,8 @@ export class CourseService {
     return of(course).pipe(delay(500));
   }
 
-
   updateCourseDetails(courseId: string, updatedData: Partial<Course>): Observable<Course> {
-    const courseIndex = this.courses.findIndex(c => c.id === courseId);
+    const courseIndex = this.courses.findIndex((c) => c.id === courseId);
 
     if (courseIndex === -1) {
       return throwError(() => new Error(`Course with ID ${courseId} not found`));
@@ -52,13 +50,12 @@ export class CourseService {
     return of(this.courses[courseIndex]).pipe(delay(300));
   }
 
-
   addReview(courseId: string | undefined, review: Review): Observable<Course> {
     if (!courseId) {
       return throwError(() => new Error('Course ID is required'));
     }
 
-    const courseIndex = this.courses.findIndex(c => c.id === courseId);
+    const courseIndex = this.courses.findIndex((c) => c.id === courseId);
 
     if (courseIndex === -1) {
       return throwError(() => new Error(`Course with ID ${courseId} not found`));
@@ -84,9 +81,8 @@ export class CourseService {
     return of(this.courses[courseIndex]).pipe(delay(300));
   }
 
-
   updateEnrollment(courseId: string, isEnrolled: boolean): Observable<Course> {
-    const courseIndex = this.courses.findIndex(c => c.id === courseId);
+    const courseIndex = this.courses.findIndex((c) => c.id === courseId);
 
     if (courseIndex === -1) {
       return throwError(() => new Error(`Course with ID ${courseId} not found`));
@@ -122,7 +118,7 @@ export class CourseService {
    * Useful for testing or resetting the app
    */
   resetCourses(): void {
-    this.courses = [...mockCourses as Course[]];
+    this.courses = [...(mockCourses as Course[])];
     console.log('Courses reset to original mock data');
   }
 }
