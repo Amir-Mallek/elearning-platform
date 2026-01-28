@@ -56,23 +56,23 @@ import { Quiz } from '../../models/quiz.model';
       <!-- Main Content -->
       <main class="max-w-4xl mx-auto px-4 py-8">
         @if (currentQuestion(); as question) {
-        <app-question
-          [question]="question"
-          [selectedOptionId]="getSelectedAnswer(question.id)"
-          (optionSelected)="onOptionSelected(question.id, $event)"
-        />
+          <app-question
+            [question]="question"
+            [selectedOptionId]="getSelectedAnswer(question.id)"
+            (optionSelected)="onOptionSelected(question.id, $event)"
+          />
         } @else {
-        <!-- Loading Skeleton -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 animate-pulse">
-          <div class="h-4 bg-gray-200 rounded w-24 mb-6"></div>
-          <div class="h-6 bg-gray-200 rounded w-3/4 mb-8"></div>
-          <div class="space-y-3">
-            <div class="h-14 bg-gray-100 rounded-lg"></div>
-            <div class="h-14 bg-gray-100 rounded-lg"></div>
-            <div class="h-14 bg-gray-100 rounded-lg"></div>
-            <div class="h-14 bg-gray-100 rounded-lg"></div>
+          <!-- Loading Skeleton -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 animate-pulse">
+            <div class="h-4 bg-gray-200 rounded w-24 mb-6"></div>
+            <div class="h-6 bg-gray-200 rounded w-3/4 mb-8"></div>
+            <div class="space-y-3">
+              <div class="h-14 bg-gray-100 rounded-lg"></div>
+              <div class="h-14 bg-gray-100 rounded-lg"></div>
+              <div class="h-14 bg-gray-100 rounded-lg"></div>
+              <div class="h-14 bg-gray-100 rounded-lg"></div>
+            </div>
           </div>
-        </div>
         }
 
         <!-- Navigation -->
@@ -94,48 +94,48 @@ import { Quiz } from '../../models/quiz.model';
           </button>
 
           @if (isLastQuestion()) {
-          <button
-            (click)="submitQuiz()"
-            class="flex items-center gap-2 px-8 py-3 rounded-lg font-medium transition-all duration-200 bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-200"
-          >
-            Submit Quiz
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </button>
+            <button
+              (click)="submitQuiz()"
+              class="flex items-center gap-2 px-8 py-3 rounded-lg font-medium transition-all duration-200 bg-green-600 text-white hover:bg-green-700 shadow-lg shadow-green-200"
+            >
+              Submit Quiz
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </button>
           } @else {
-          <button
-            (click)="nextQuestion()"
-            class="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200"
-          >
-            Next
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
+            <button
+              (click)="nextQuestion()"
+              class="flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200"
+            >
+              Next
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
           }
         </div>
 
         <!-- Question Navigation Dots -->
         <div class="flex flex-wrap justify-center gap-2 mt-8">
           @for (question of quiz()?.questions ?? []; track question.id; let i = $index) {
-          <button
-            (click)="goToQuestion(i)"
-            class="w-10 h-10 rounded-full font-medium text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            [class]="getQuestionDotClasses(i, question.id)"
-          >
-            {{ i + 1 }}
-          </button>
+            <button
+              (click)="goToQuestion(i)"
+              class="w-10 h-10 rounded-full font-medium text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              [class]="getQuestionDotClasses(i, question.id)"
+            >
+              {{ i + 1 }}
+            </button>
           }
         </div>
       </main>
@@ -263,7 +263,8 @@ export class QuizComponent implements OnInit, OnDestroy {
     if (!q) return;
 
     const result = this.quizService.gradeQuiz(q, this.answers());
-    this.router.navigate(['/quiz', q.id, 'results'], {
+    this.router.navigate(['results'], {
+      relativeTo: this.route,
       state: { result },
     });
   }

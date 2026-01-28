@@ -2,19 +2,16 @@
   <!-- Main Content Area -->
   <div class="flex-1 flex flex-col">
     <!-- Course Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
-      <h1 class="text-2xl font-bold text-gray-800">{{ course.title }}</h1>
-      <p class="text-gray-600 mt-1">{{ course.description }}</p>
-    </div>
+    @if (course) {
+      <div class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+        <h1 class="text-2xl font-bold text-gray-800">{{ course.title }}</h1>
+        <p class="text-gray-600 mt-1">{{ course.description }}</p>
+      </div>
+    }
 
     <!-- Video Player / Content Area -->
     <div class="flex-1 flex items-center justify-center p-6">
-      <!-- Lesson Video -->
-      @if (currentItem && isLesson(currentItem)) {
-        <app-video-lesson [lesson]="currentItem" />
-      } @else if (currentItem && isQuiz(currentItem)) {
-        <app-quiz-content [quiz]="currentItem" />
-      }
+      <router-outlet></router-outlet>
     </div>
 
     <!-- Controls Bar -->
@@ -74,7 +71,7 @@
           [disabled]="!hasNext"
           [class.opacity-50]="!hasNext"
           [class.cursor-not-allowed]="!hasNext"
-          class="btn-primary"
+          class="flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:hover:bg-gray-200"
         >
           Next
           <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -215,9 +212,10 @@
                           {{ formatDuration(item.duration) }}
                         </span>
                       </span>
-                    } @else if (isQuiz(item)) {
-                      <span> {{ item.questionCount }} questions </span>
                     }
+                    <!-- @else if (isQuiz(item)) {
+                      <span> {{ item.questionCount }} questions </span>
+                    } -->
                   </p>
                 </div>
               </div>
