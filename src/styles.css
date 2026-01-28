@@ -1,2 +1,219 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
+
+/* ===== Global Theme Variables ===== */
+:root {
+  /* Brand Colors */
+  --primary: 2, 115, 94;       /* #02735E */
+  --secondary: 3, 166, 120;    /* #03A678 */
+  --success: 1, 64, 64;        /* #014040 */
+  --danger: 115, 23, 2;        /* #731702 */
+  --warning: 242, 116, 5;      /* #F27405 */
+
+  /* Neutral Colors */
+  --background: 255, 255, 255; /* #FFFFFF */
+  --foreground: 17, 24, 39;    /* #111827 */
+  --border: 191, 194, 199;     /* #BFC2C7 */
+
+  /* Opacities */
+  --opacity-100: 1;
+  --opacity-80: 0.8;
+  --opacity-60: 0.6;
+  --opacity-50: 0.5;
+  --opacity-40: 0.4;
+  --opacity-20: 0.2;
+  --opacity-10: 0.1;
+  --opacity-05: 0.05;
+}
+
+/* ===== Dark Mode ===== */
+.dark {
+  --background: 2, 6, 23;
+  --foreground: 229, 231, 235;
+  --border: 55, 65, 81;
+}
+
+/* ===== Utilities ===== */
+@layer utilities {
+
+  /* Backgrounds */
+  .bg-background {
+    background-color: rgba(var(--background), var(--opacity-100));
+  }
+
+  .bg-primary {
+    background-color: rgba(var(--primary), var(--opacity-100));
+  }
+
+  .bg-primary-80 {
+    background-color: rgba(var(--primary), var(--opacity-80));
+  }
+
+  .bg-primary-60 {
+    background-color: rgba(var(--primary), var(--opacity-60));
+  }
+
+  .bg-primary-50 {
+    background-color: rgba(var(--primary), var(--opacity-50));
+  }
+
+  .bg-primary-10 {
+    background-color: rgba(var(--primary), var(--opacity-10));
+  }
+
+  .bg-primary-05 {
+    background-color: rgba(var(--primary), var(--opacity-05));
+  }
+
+  .bg-secondary {
+    background-color: rgba(var(--secondary), var(--opacity-100));
+  }
+
+  .bg-secondary-80 {
+    background-color: rgba(var(--secondary), var(--opacity-80));
+  }
+
+  .bg-success {
+    background-color: rgba(var(--success), var(--opacity-100));
+  }
+
+  .bg-success-50 {
+    background-color: rgba(var(--success), var(--opacity-50));
+  }
+
+  .bg-danger {
+    background-color: rgba(var(--danger), var(--opacity-100));
+  }
+
+  .bg-warning {
+    background-color: rgba(var(--warning), var(--opacity-100));
+  }
+
+  /* Text */
+  .text-primary {
+    color: rgba(var(--primary), var(--opacity-100));
+  }
+
+  .text-secondary {
+    color: rgba(var(--secondary), var(--opacity-100));
+  }
+
+  .text-success {
+    color: rgba(var(--success), var(--opacity-100));
+  }
+
+  .text-danger {
+    color: rgba(var(--danger), var(--opacity-100));
+  }
+
+  .text-warning {
+    color: rgba(var(--warning), var(--opacity-100));
+  }
+
+  .text-foreground {
+    color: rgba(var(--foreground), var(--opacity-100));
+  }
+
+  /* Borders */
+  .border-border {
+    border-color: rgba(var(--border), var(--opacity-100));
+  }
+
+  .border-primary {
+    border-color: rgba(var(--primary), var(--opacity-100));
+  }
+
+  .border-secondary {
+    border-color: rgba(var(--secondary), var(--opacity-100));
+  }
+
+  .border-success {
+    border-color: rgba(var(--success), var(--opacity-100));
+  }
+
+  .border-danger {
+    border-color: rgba(var(--danger), var(--opacity-100));
+  }
+
+  .border-warning {
+    border-color: rgba(var(--warning), var(--opacity-100));
+  }
+
+  .border-foreground {
+    border-color: rgba(var(--foreground), var(--opacity-100));
+  }
+}
+
+/* ===== Components ===== */
+@layer utilities {
+
+  /* Primary Button */
+  .btn-primary {
+    background-color: rgb(var(--primary));
+    color: rgb(var(--background));
+    /*@apply flex items-center px-4 py-2 rounded-lg transition-colors;*/
+  }
+
+  .btn-primary:hover {
+    background-color: rgba(var(--primary), var(--opacity-80));
+  }
+
+  .btn-primary:disabled:hover {
+    background-color: rgba(var(--primary), var(--opacity-05));
+  }
+
+  /* Small Button */
+  .btn-small {
+    background-color: rgba(var(--primary), var(--opacity-05));
+    color: rgb(var(--foreground));
+    @apply px-3 py-1 text-sm rounded-md border transition-colors;
+  }
+
+  .btn-small--inactive {
+    background-color: rgba(var(--background), var(--opacity-100));
+    color: rgb(var(--foreground));
+    border-color: rgb(209 213 219);
+  }
+
+  .btn-small--inactive:hover {
+    background-color: rgba(var(--primary), var(--opacity-05));
+  }
+
+  .btn-small--active {
+    background-color: rgba(var(--background), var(--opacity-100));
+    color: rgb(var(--foreground));
+    border-color: rgba(var(--primary), var(--opacity-20));
+  }
+
+  .btn-small--active:hover:not(:disabled) {
+    background-color: rgba(var(--primary), var(--opacity-05));
+  }
+
+  .btn-small:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* Button Toggle */
+  .btn-toggle-group {
+    background-color: rgba(var(--background), var(--opacity-100));
+    border-color: rgba(var(--border), var(--opacity-100));
+    @apply inline-flex rounded-lg border shadow-sm overflow-hidden;
+  }
+
+  .btn-toggle {
+    @apply px-3 py-2 text-xs sm:text-sm font-medium;
+  }
+
+  .btn-toggle--active {
+    background-color: rgba(var(--primary), var(--opacity-100));
+    color: rgb(var(--background));
+  }
+
+  .btn-toggle--inactive {
+    color: rgb(var(--foreground));
+  }
+
+  .btn-toggle--inactive:hover {
+    background-color: rgba(var(--primary), var(--opacity-05));
+  }
+}
