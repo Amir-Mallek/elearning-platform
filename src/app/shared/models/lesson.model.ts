@@ -1,10 +1,10 @@
-import { CourseItem } from "./course-item.model";
+import { CourseItem } from './course-item.model';
 
 export interface Lesson extends CourseItem {
-  id: string
+  id: string;
   title: string;
   duration: number;
   text: string;
-  isPreview: boolean
-  isFree: boolean
+  isPreview: boolean;
+  isFree: boolean;
 }
