@@ -5,6 +5,8 @@ import mockCourseItems from '@assets/mock-course-items.json';
 import { CourseItem } from '@models/course-item.model';
 import { delay, Observable, of, throwError } from 'rxjs';
 import { Review } from '@models/review.model';
+import { Lesson } from '@models/lesson.model';
+import { CourseItemType } from '@enums/course-item-type.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +14,7 @@ import { Review } from '@models/review.model';
 export class CourseService {
   // ✅ This is your single source of truth - all changes happen here
   private courses: Course[] = [...(mockCourses as Course[])];
+  private courseItems: CourseItem[] = [...(mockCourseItems as CourseItem[])];
 
   getCourses(): Course[] {
     return this.courses; // ✅ Changed from mockCourses
@@ -19,6 +22,21 @@ export class CourseService {
 
   getCourseItems(courseId: string): Observable<CourseItem[]> {
     return of(mockCourseItems as CourseItem[]);
+  }
+
+  /**
+   * Get a specific lesson by ID
+   */
+  getLessonById(lessonId: string): Observable<Lesson | null> {
+    const item = this.courseItems.find(
+      (item) => item.id === lessonId && item.type === CourseItemType.LESSON,
+    );
+
+    if (!item) {
+      return of(null).pipe(delay(200));
+    }
+
+    return of(item as Lesson).pipe(delay(200));
   }
 
   getCourseDetails(courseId: string): Observable<Course> {

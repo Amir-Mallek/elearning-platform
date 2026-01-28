@@ -1,60 +1,67 @@
-import { Component, inject, Input, Signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CourseItem } from '@models/course-item.model';
 import { Lesson } from '@models/lesson.model';
 import { Course } from '@models/course.model';
-import { CourseItemType } from '../../shared/enums/course-item-type.enum';
-import { CourseService } from '../../shared/services/course.service';
-import { ActivatedRoute, RouterOutlet } from '@angular/router';
-import { map, switchMap } from 'rxjs';
+import { CourseItemType } from '@enums/course-item-type.enum';
+import { CourseService } from '@services/course.service';
+import { EnrollmentService } from '@services/enrollment.service';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { combineLatest, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { CourseSidebarComponent } from './components/course-sidebar/course-sidebar.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-learning',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, CourseSidebarComponent, CommonModule],
   templateUrl: './learning.html',
   styleUrl: './learning.css',
 })
-export class Learning {
-  route = inject(ActivatedRoute);
-  courseService = inject(CourseService);
+export class Learning implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private courseService = inject(CourseService);
+  private enrollmentService = inject(EnrollmentService);
+  private destroy$ = new Subject<void>();
+
   courseId: string = '';
-  course!: Course;
+  course: Course | null = null;
   courseItems: CourseItem[] = [];
   currentItem: CourseItem | null = null;
   currentIndex: number = 0;
-  completedItems: Set<string> = new Set();
+  lastCompletedIndex: number = -1;
 
-  constructor() {
-    this.loadCourse();
-    this.loadCourseItems();
+  ngOnInit(): void {
+    this.loadCourseData();
   }
 
-  loadCourse() {
-    this.route.params
-      .pipe(
-        map((params) => params['courseId']),
-        switchMap((id) => this.courseService.getCourseDetails(id)),
-      )
-      .subscribe({
-        next: (course) => {
-          this.course = course;
-        },
-      });
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  loadCourseItems() {
+  private loadCourseData(): void {
     this.route.params
       .pipe(
-        map((params) => params['courseId']),
-        switchMap((id) => {
-          this.courseId = id;
-          return this.courseService.getCourseItems(id);
+        tap((params) => {
+          this.courseId = params['courseId'];
         }),
+        switchMap((params) =>
+          combineLatest([
+            this.courseService.getCourseDetails(params['courseId']),
+            this.courseService.getCourseItems(params['courseId']),
+            this.enrollmentService.getEnrollment(params['courseId']),
+          ]),
+        ),
+        takeUntil(this.destroy$),
       )
       .subscribe({
-        next: (courseItems) => {
+        next: ([course, courseItems, enrollment]) => {
+          this.course = course;
           this.courseItems = courseItems;
-          this.completedItems = new Set();
-          if (this.courseItems.length > 0) {
+          this.lastCompletedIndex = enrollment.lastCompleted;
+
+          // Navigate to first item if none selected
+          if (this.courseItems.length > 0 && !this.currentItem) {
             this.selectItem(0);
           }
         },
@@ -65,18 +72,41 @@ export class Learning {
     if (index >= 0 && index < this.courseItems.length) {
       this.currentIndex = index;
       this.currentItem = this.courseItems[index];
+
+      switch (this.courseItems[index].type) {
+        case CourseItemType.LESSON:
+          this.router.navigate(['lesson', this.courseItems[index].id], {
+            relativeTo: this.route,
+          });
+          break;
+        case CourseItemType.QUIZ:
+          this.router.navigate(['quiz', this.courseItems[index].id], {
+            relativeTo: this.route,
+          });
+          break;
+      }
     }
   }
 
   markAsComplete(): void {
     if (this.currentItem) {
-      this.completedItems.add(this.currentItem.id);
-      // In real implementation, save to backend via enrollment service
+      // Only mark complete if this is the next item to complete (sequential progress)
+      // Or if it's already before or at the last completed index
+      if (this.currentIndex > this.lastCompletedIndex) {
+        this.enrollmentService
+          .updateLastCompleted(this.courseId, this.currentIndex)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (enrollment) => {
+              this.lastCompletedIndex = enrollment.lastCompleted;
+            },
+          });
+      }
     }
   }
 
-  isItemCompleted(itemId: string): boolean {
-    return this.completedItems.has(itemId);
+  isItemCompleted(index: number): boolean {
+    return index <= this.lastCompletedIndex;
   }
 
   goToNextItem(): void {
@@ -93,7 +123,8 @@ export class Learning {
 
   get progressPercentage(): number {
     if (this.courseItems.length === 0) return 0;
-    return Math.round((this.completedItems.size / this.courseItems.length) * 100);
+    const completedCount = this.lastCompletedIndex + 1;
+    return Math.round((completedCount / this.courseItems.length) * 100);
   }
 
   get hasNext(): boolean {
@@ -104,17 +135,15 @@ export class Learning {
     return this.currentIndex > 0;
   }
 
+  get isCurrentItemCompleted(): boolean {
+    return this.isItemCompleted(this.currentIndex);
+  }
+
   isLesson(item: CourseItem): item is Lesson {
     return item.type === CourseItemType.LESSON;
   }
 
-  isQuiz(item: CourseItem) {
+  isQuiz(item: CourseItem): boolean {
     return item.type === CourseItemType.QUIZ;
-  }
-
-  formatDuration(seconds: number): string {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   }
 }
