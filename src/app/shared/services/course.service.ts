@@ -25,6 +25,7 @@ export class CourseService {
     console.log('Getting course details for:', courseId);
 
     const course = this.courses.find((c) => c.id === courseId); // ✅ Changed from mockCourses
+    console.log(course);
 
     if (!course) {
       return throwError(() => new Error(`Course with ID ${courseId} not found`));
