@@ -4,16 +4,16 @@
 /* ===== Global Theme Variables ===== */
 :root {
   /* Brand Colors */
-  --primary: 2, 115, 94;       /* #02735E */
-  --secondary: 3, 166, 120;    /* #03A678 */
-  --success: 1, 64, 64;        /* #014040 */
-  --danger: 115, 23, 2;        /* #731702 */
-  --warning: 242, 116, 5;      /* #F27405 */
+  --primary: 2, 115, 94; /* #02735E */
+  --secondary: 3, 166, 120; /* #03A678 */
+  --success: 1, 64, 64; /* #014040 */
+  --danger: 115, 23, 2; /* #731702 */
+  --warning: 242, 116, 5; /* #F27405 */
 
   /* Neutral Colors */
   --background: 255, 255, 255; /* #FFFFFF */
-  --foreground: 17, 24, 39;    /* #111827 */
-  --border: 191, 194, 199;     /* #BFC2C7 */
+  --foreground: 17, 24, 39; /* #111827 */
+  --border: 191, 194, 199; /* #BFC2C7 */
 
   /* Opacities */
   --opacity-100: 1;
@@ -35,7 +35,6 @@
 
 /* ===== Utilities ===== */
 @layer utilities {
-
   /* Backgrounds */
   .bg-background {
     background-color: rgba(var(--background), var(--opacity-100));
@@ -146,22 +145,6 @@
 
 /* ===== Components ===== */
 @layer utilities {
-
-  /* Primary Button */
-  .btn-primary {
-    background-color: rgb(var(--primary));
-    color: rgb(var(--background));
-    /*@apply flex items-center px-4 py-2 rounded-lg transition-colors;*/
-  }
-
-  .btn-primary:hover {
-    background-color: rgba(var(--primary), var(--opacity-80));
-  }
-
-  .btn-primary:disabled:hover {
-    background-color: rgba(var(--primary), var(--opacity-05));
-  }
-
   /* Small Button */
   .btn-small {
     background-color: rgba(var(--primary), var(--opacity-05));

@@ -17,8 +17,8 @@ export class CourseService {
     return this.courses; // ✅ Changed from mockCourses
   }
 
-  getCourseItems(courseId: string): CourseItem[] {
-    return mockCourseItems as CourseItem[];
+  getCourseItems(courseId: string): Observable<CourseItem[]> {
+    return of(mockCourseItems as CourseItem[]);
   }
 
   getCourseDetails(courseId: string): Observable<Course> {

@@ -1,41 +1,64 @@
-import { Component, inject, Input } from '@angular/core';
-import { CourseItem } from '../../shared/models/course-item.model';
-import { Lesson } from '../../shared/models/lesson.model';
-import { Course } from '../../shared/models/course.model';
-import { Quiz } from '../../shared/models/quiz.model';
+import { Component, inject, Input, Signal } from '@angular/core';
+import { CourseItem } from '@models/course-item.model';
+import { Lesson } from '@models/lesson.model';
+import { Course } from '@models/course.model';
 import { CourseItemType } from '../../shared/enums/course-item-type.enum';
 import { CourseService } from '../../shared/services/course.service';
-import { VideoLesson } from '../video-lesson/video-lesson';
-import { QuizContent } from '../quiz-content/quiz-content';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
+import { map, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-learning',
-  imports: [VideoLesson, QuizContent],
+  imports: [RouterOutlet],
   templateUrl: './learning.html',
   styleUrl: './learning.css',
 })
 export class Learning {
-  @Input() course!: Course;
+  route = inject(ActivatedRoute);
+  courseService = inject(CourseService);
+  courseId: string = '';
+  course!: Course;
   courseItems: CourseItem[] = [];
   currentItem: CourseItem | null = null;
   currentIndex: number = 0;
   completedItems: Set<string> = new Set();
-  courseService = inject(CourseService);
 
-  ngOnInit(): void {
+  constructor() {
     this.loadCourse();
+    this.loadCourseItems();
   }
 
-  loadCourse(): void {
-    this.courseItems = this.courseService.getCourseItems(this.course.id);
+  loadCourse() {
+    this.route.params
+      .pipe(
+        map((params) => params['courseId']),
+        switchMap((id) => this.courseService.getCourseDetails(id)),
+      )
+      .subscribe({
+        next: (course) => {
+          this.course = course;
+        },
+      });
+  }
 
-    // Load completed items from enrollment (mock for now)
-    // In real implementation, get this from enrollment service
-    this.completedItems = new Set();
-
-    if (this.courseItems.length > 0) {
-      this.selectItem(0);
-    }
+  loadCourseItems() {
+    this.route.params
+      .pipe(
+        map((params) => params['courseId']),
+        switchMap((id) => {
+          this.courseId = id;
+          return this.courseService.getCourseItems(id);
+        }),
+      )
+      .subscribe({
+        next: (courseItems) => {
+          this.courseItems = courseItems;
+          this.completedItems = new Set();
+          if (this.courseItems.length > 0) {
+            this.selectItem(0);
+          }
+        },
+      });
   }
 
   selectItem(index: number): void {
@@ -85,7 +108,7 @@ export class Learning {
     return item.type === CourseItemType.LESSON;
   }
 
-  isQuiz(item: CourseItem): item is Quiz {
+  isQuiz(item: CourseItem) {
     return item.type === CourseItemType.QUIZ;
   }
 
