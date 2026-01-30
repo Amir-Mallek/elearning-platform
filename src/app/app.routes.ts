@@ -1,19 +1,11 @@
 import { Routes } from '@angular/router';
-import {  CourseDetailComponent  } from './features/course-detail/course-detail';
+import { CourseDetailComponent } from './features/course-detail/course-detail';
 import { CourseCatalogComponent } from '@features/courses/pages/course-catalog/course-catalog';
-import {  Learning  } from '@features/learning/learning';
+import { Learning } from '@features/learning/learning';
 import { QUIZ_ROUTES } from '@features/quiz/quiz.routes';
 import { VideoLesson } from '@features/video-lesson/video-lesson';
 
 export const routes: Routes = [
-  {
-    path: 'courses',
-    component: CourseCatalogComponent,
-  },
-  {
-    path: 'quiz',
-    loadChildren: () => import('@features/quiz/quiz.routes').then((m) => m.QUIZ_ROUTES),
-  },
   {
     path: 'dashboard',
     loadChildren: () =>
@@ -37,15 +29,5 @@ export const routes: Routes = [
         component: VideoLesson,
       },
     ],
-  },
-];
-
-  {
-    path: 'courses',
-    component: CourseCatalogComponent,
-  },
-  {
-    path: 'learning',
-    component: Learning,
   },
 ];
