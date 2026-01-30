@@ -1,35 +1,52 @@
-/* Card Flip Animation */
-.flip-card {
-  perspective: 1800px;
+.course-card {
+  width: 100%;
+  cursor: pointer;
+  outline: none;
+  perspective: 1000px;
+}
+
+.course-card-inner {
+  position: relative;
   width: 100%;
   height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 600ms ease;
+}
+
+.course-card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.course-card-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   overflow: hidden;
 }
 
-.flip-card-inner {
-  position: relative;
-  width: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.35s ease-in-out;
-  will-change: transform;
-}
-
-.flip-card-inner--front {
+.course-card-front {
   transform: rotateY(0deg);
 }
 
-.flip-card-inner--back {
+.course-card-back {
   transform: rotateY(180deg);
 }
 
-.flip-card-face {
-  position: absolute;
-  inset: 0;
+.course-card-media {
+  width: 100%;
+  height: 10rem;
+  overflow: hidden;
+}
+.course-card-grid .course-card-media.media--grid {
+  height: 10rem;   /* like h-40 */
+  width: 100%;
+}
+
+.course-card-list .course-card-media.media--list {
   height: 100%;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-.flip-card-back {
-  transform: rotateY(180deg);
+  width: 11rem;    /* thumbnail left */
+  flex: 0 0 auto;
 }
