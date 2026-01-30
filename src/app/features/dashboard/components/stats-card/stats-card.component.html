@@ -1,0 +1,54 @@
+<div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+  <div class="flex items-center justify-between mb-2">
+    <div [ngClass]="getIconClasses()" class="w-12 h-12 rounded-lg flex items-center justify-center">
+      <svg
+        class="w-6 h-6"
+        [ngClass]="getIconColor()"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          [attr.d]="getIconSvg()"
+        />
+      </svg>
+    </div>
+
+    @if (trend) {
+    <div class="flex items-center gap-1 text-sm">
+      @if (trend.isPositive) {
+      <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+        />
+      </svg>
+      <span class="text-green-600 font-medium">+{{ trend.value }}%</span>
+      } @else {
+      <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"
+        />
+      </svg>
+      <span class="text-red-600 font-medium">{{ trend.value }}%</span>
+      }
+    </div>
+    }
+  </div>
+
+  <div class="text-2xl font-bold text-gray-900 mb-1">
+    {{ value }}
+  </div>
+
+  <div class="text-sm text-gray-600">
+    {{ label }}
+  </div>
+</div>

@@ -1,0 +1,357 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8 flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+          Welcome back, {{ currentUser().name }}!
+        </h1>
+        <p class="text-gray-600">Here's what's happening with your learning journey</p>
+      </div>
+
+      <button
+        (click)="refreshDashboard()"
+        class="bg-white px-4 py-2 rounded-lg shadow hover:shadow-md transition"
+      >
+        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Error Alert -->
+    @if (error(); as errorMsg) {
+    <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span class="text-red-800 font-medium">{{ errorMsg }}</span>
+        </div>
+        <button (click)="clearError()" class="text-red-600 hover:text-red-700">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+    }
+
+    <!-- ✅ Loading State with @if -->
+    @if (loading()) {
+    <div class="flex items-center justify-center h-64">
+      <div class="text-center">
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"
+        ></div>
+        <p class="text-gray-600">Loading your dashboard...</p>
+      </div>
+    </div>
+    } @else {
+
+    <!-- Quick Stats Grid -->
+    @if (stats(); as statsData) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      <app-stats-card
+        icon="book-open"
+        [value]="statsData.coursesInProgress"
+        label="Courses In Progress"
+        color="blue"
+      />
+
+      <app-stats-card
+        icon="check-circle"
+        [value]="statsData.coursesCompleted"
+        label="Completed"
+        color="green"
+      />
+
+      <app-stats-card
+        icon="clock"
+        [value]="formatHours(statsData.hoursLearned)"
+        label="Hours Learned"
+        color="purple"
+      />
+
+      <app-stats-card
+        icon="award"
+        [value]="statsData.certificatesEarned"
+        label="Certificates"
+        color="yellow"
+      />
+
+      <app-stats-card
+        icon="trending-up"
+        [value]="statsData.currentStreak + ' days'"
+        label="Current Streak"
+        color="orange"
+      />
+    </div>
+    }
+
+    <!-- Urgent Deadline Alert -->
+    @if (urgentCourses().length > 0) {
+    <div class="mb-6 bg-orange-50 border-l-4 border-orange-500 rounded-lg p-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <svg
+            class="w-6 h-6 text-orange-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <div>
+            <p class="font-medium text-orange-900">
+              {{ urgentCourses().length }} course(s) due soon!
+            </p>
+            <p class="text-sm text-orange-700">
+              {{ urgentCourses()[0].course.title }} - Due
+              {{ getTimeRemaining(urgentCourses()[0].dueDate!) }}
+            </p>
+          </div>
+        </div>
+        <button
+          (click)="goToUrgentCourse()"
+          class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition"
+        >
+          Continue Learning
+        </button>
+      </div>
+    </div>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <!-- Left Column: Charts & Courses (2 columns) -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Progress Chart -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-gray-900">Learning Activity</h2>
+
+            <div class="flex gap-2">
+              <button
+                (click)="onPeriodChange('week')"
+                [class.bg-blue-600]="selectedPeriod() === 'week'"
+                [class.text-white]="selectedPeriod() === 'week'"
+                [class.bg-gray-100]="selectedPeriod() !== 'week'"
+                [class.text-gray-600]="selectedPeriod() !== 'week'"
+                class="px-4 py-2 rounded-lg font-medium transition hover:shadow"
+              >
+                Week
+              </button>
+
+              <button
+                (click)="onPeriodChange('month')"
+                [class.bg-blue-600]="selectedPeriod() === 'month'"
+                [class.text-white]="selectedPeriod() === 'month'"
+                [class.bg-gray-100]="selectedPeriod() !== 'month'"
+                [class.text-gray-600]="selectedPeriod() !== 'month'"
+                class="px-4 py-2 rounded-lg font-medium transition hover:shadow"
+              >
+                Month
+              </button>
+            </div>
+          </div>
+
+          <app-progress-chart [period]="selectedPeriod()" [data]="learningData()" />
+        </div>
+
+        <!-- Enrolled Courses -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-gray-900">Continue Learning</h2>
+            <button
+              (click)="viewAllCourses()"
+              class="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+            >
+              View All
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- ✅ @for with track and @empty -->
+          <div class="space-y-4">
+            @for (enrolledCourse of inProgressCourses(); track enrolledCourse.enrollmentId) {
+            <app-course-card
+              [enrolledCourse]="enrolledCourse"
+              (continue)="onContinueCourse(enrolledCourse.course.id)"
+              (play)="onPlayCourse(enrolledCourse.course.id)"
+            />
+            } @empty {
+            <div class="text-center py-12 text-gray-500">
+              <svg
+                class="w-16 h-16 mx-auto mb-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
+              </svg>
+              <p class="text-lg font-medium mb-2">No courses in progress</p>
+              <p class="text-sm mb-4">Start learning something new today!</p>
+              <button
+                (click)="viewAllCourses()"
+                class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                Browse Courses
+              </button>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar (1 column) -->
+      <div class="space-y-6">
+        <!-- Course Overview -->
+        <app-course-overview
+          [completedCount]="completedCourses().length"
+          [inProgressCount]="inProgressCourses().length"
+          [totalCount]="courses().length"
+        />
+
+        <!-- Activity Feed -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">Recent Activity</h2>
+
+          <app-activity-feed [activities]="recentActivities()" />
+
+          <button
+            (click)="viewAllActivities()"
+            class="w-full mt-4 text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center justify-center gap-1"
+          >
+            View All Activity
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Upcoming Deadlines -->
+        @if (upcomingDeadlines().length > 0) {
+        <div class="bg-orange-50 border border-orange-200 rounded-xl p-6">
+          <div class="flex items-center gap-2 mb-4">
+            <svg
+              class="w-5 h-5 text-orange-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h3 class="font-bold text-orange-900">Upcoming Deadlines</h3>
+          </div>
+
+          @for (course of upcomingDeadlines(); track course.enrollmentId) {
+          <div class="mb-3 pb-3 border-b border-orange-200 last:border-0 last:pb-0">
+            <p class="font-medium text-orange-900 text-sm">
+              {{ course.course.title }}
+            </p>
+            <p class="text-xs text-orange-700 mt-1">Due: {{ getTimeRemaining(course.dueDate!) }}</p>
+            <div class="mt-2">
+              <div class="w-full bg-orange-200 rounded-full h-1.5">
+                <div
+                  class="bg-orange-600 h-1.5 rounded-full"
+                  [style.width.%]="course.progress"
+                ></div>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Certificates Section -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900">Your Certificates</h2>
+        <button
+          (click)="viewAllCertificates()"
+          class="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+        >
+          View All
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (cert of recentCertificates(); track cert.id) {
+        <app-certificate-card [certificate]="cert" (download)="onDownloadCertificate(cert.id)" />
+        } @empty {
+        <div class="col-span-3 text-center py-12 text-gray-500">
+          <svg
+            class="w-16 h-16 mx-auto mb-4 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+            />
+          </svg>
+          <p class="text-lg font-medium mb-2">No certificates earned yet</p>
+          <p class="text-sm">Complete courses to earn certificates</p>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+</div>

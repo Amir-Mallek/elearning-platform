@@ -1,0 +1,86 @@
+<div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+  <div class="relative">
+    <!-- Certificate Thumbnail -->
+    <img
+      [src]="certificate.thumbnailUrl || 'https://via.placeholder.com/400x250'"
+      [alt]="certificate.courseTitle"
+      class="w-full h-48 object-cover"
+    />
+
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+
+    <!-- Badge -->
+    <div class="absolute bottom-4 left-4 right-4">
+      <div class="flex items-center gap-2 text-yellow-400 mb-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+          />
+        </svg>
+        <span class="text-sm font-medium">Certificate</span>
+      </div>
+
+      @if (certificate.grade) {
+      <div class="inline-block bg-green-500 text-white text-xs px-2 py-1 rounded">
+        Grade: {{ certificate.grade }}%
+      </div>
+      }
+    </div>
+
+    <!-- Expired Badge -->
+    @if (isExpired()) {
+    <div
+      class="absolute top-4 right-4 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-medium"
+    >
+      Expired
+    </div>
+    }
+  </div>
+
+  <!-- Certificate Info -->
+  <div class="p-4">
+    <h3 class="font-semibold text-gray-900 mb-2">
+      {{ certificate.courseTitle }}
+    </h3>
+    <p class="text-sm text-gray-600 mb-1">Issued: {{ formatDate(certificate.issueDate) }}</p>
+    <p class="text-xs text-gray-500 mb-4">ID: {{ certificate.credentialId }}</p>
+
+    @if (certificate.skills && certificate.skills.length > 0) {
+    <div class="flex flex-wrap gap-2 mb-4">
+      @for (skill of certificate.skills.slice(0, 3); track skill) {
+      <span class="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded">
+        {{ skill }}
+      </span>
+      }
+    </div>
+    }
+
+    <!-- Actions -->
+    <div class="flex gap-2">
+      <button
+        (click)="onDownload()"
+        class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition text-sm flex items-center justify-center gap-1"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+          />
+        </svg>
+        Download
+      </button>
+      <button
+        (click)="onShare()"
+        class="px-4 py-2 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition text-sm"
+      >
+        Share
+      </button>
+    </div>
+  </div>
+</div>
