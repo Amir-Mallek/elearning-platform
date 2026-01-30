@@ -64,7 +64,7 @@
   <!-- LIST MODE -->
   <ng-container *ngIf="viewMode === 'list'">
     <div
-      class="course-card course-card-list h-[10rem] rounded-lg shadow-md bg-primary-05 text-foreground overflow-hidden flex">
+      class="course-card course-card-list h-[10rem] rounded-lg shadow-md bg-primary-05 text-foreground overflow-hidden flex my-3">
       <!-- left image -->
       <div class="w-44 h-full overflow-hidden flex-shrink-0">
         <img [src]="getThumb(course)" [alt]="course.title" loading="lazy" decoding="async" (error)="onImgError($event)"
