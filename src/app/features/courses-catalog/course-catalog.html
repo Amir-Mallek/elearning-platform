@@ -7,7 +7,6 @@
     </p>
   </div>
 
-  <!-- Catalog wrapper: column with growing content -->
   <div class="max-w-6xl mx-auto px-4 py-6">
     <div
       class="bg-background rounded-xl shadow-sm border border-border flex flex-col min-h-[450px]"
@@ -30,7 +29,11 @@
             class="btn-toggle"
             [ngClass]="view === 'grid' ? 'btn-toggle--active' : 'btn-toggle--inactive'"
           >
-            Grid
+          @if(view === 'grid') {
+            <img src="assets/icons/grid-icon-active.svg" alt="Grid" class="w-4 h-4" />
+          } @else {
+            <img src="assets/icons/grid-icon-inactive.svg" alt="Grid" class="w-4 h-4" />
+          }
           </button>
 
           <button
@@ -38,13 +41,17 @@
             class="btn-toggle"
             [ngClass]="view === 'list' ? 'btn-toggle--active' : 'btn-toggle--inactive'"
           >
-            List
+          @if(view === 'list') {
+            <img src="assets/icons/list-icon-active.svg" alt="List" class="w-4 h-4" />
+          } @else {
+            <img src="assets/icons/list-icon-inactive.svg" alt="List" class="w-4 h-4" />
+          }
           </button>
         </div>
       </div>
 
       <!-- Courses area -->
-      <div class="flex-1 overflow-y-auto px-4 py-4">
+      <div class="flex-1 overflow-y-hidden overflow-x-auto px-4 py-4">
         @if (view === 'grid') {
           <section class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             @for (course of pagedCourses; track course.id) {

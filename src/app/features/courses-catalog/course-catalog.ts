@@ -16,7 +16,7 @@ export class CourseCatalogComponent {
   courses: Course[] = [];
   view: 'grid' | 'list' = 'grid';
   page = 1;
-  pageSize = 3;
+  pageSize = 6;
 
   constructor(private courseService: CourseService) {
     this.courses = this.courseService.getCourses();
