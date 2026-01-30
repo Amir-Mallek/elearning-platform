@@ -21,7 +21,7 @@ export interface Option {
 
 export interface QuizAttempt {
   quizId: string;
-  answers: Map<string, string>; // questionId -> selectedOptionId
+  answers: Map<string, string>;
   startTime: Date;
   endTime?: Date;
 }
@@ -29,7 +29,7 @@ export interface QuizAttempt {
 export interface QuizResult {
   totalQuestions: number;
   correctAnswers: number;
-  score: number; // percentage
+  score: number;
   questionResults: QuestionResult[];
 }
 
