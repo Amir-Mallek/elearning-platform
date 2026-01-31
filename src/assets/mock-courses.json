@@ -1,6 +1,6 @@
 [
   {
-    "id": "c1",
+    "id": "e3b7d2b6-19d2-4b11-8c87-0c1a6d5fbe11",
     "title": "Angular Fundamentals",
     "description": "Learn the core concepts of Angular from scratch, including components, modules, and services.",
     "price": 49.99,
@@ -36,7 +36,7 @@
   },
 
   {
-    "id": "c2",
+    "id": "e3b7d2b6-19d2-4b11-8c87-0c1a6d5fbe12",
     "title": "Advanced Angular & RxJS",
     "description": "Master advanced Angular patterns and reactive programming with RxJS.",
     "price": 79.99,
@@ -72,7 +72,7 @@
   },
 
   {
-    "id": "c3",
+    "id": "e3b7d2b6-19d2-4b11-8c87-0c1a6d5fbe13",
     "title": "TypeScript for Professionals",
     "description": "Write safer and more maintainable JavaScript using TypeScript.",
     "price": 39.99,
@@ -108,7 +108,7 @@
   },
 
   {
-    "id": "c4",
+    "id": "e3b7d2b6-19d2-4b11-8c87-0c1a6d5fbe14",
     "title": "Node.js Backend Development",
     "description": "Build scalable backend applications using Node.js and Express.",
     "price": 59.99,
@@ -144,7 +144,7 @@
   },
 
   {
-    "id": "c5",
+    "id": "e3b7d2b6-19d2-4b11-8c87-0c1a6d5fbe15",
     "title": "Database Design & SQL",
     "description": "Learn relational database design and SQL from zero to advanced.",
     "price": 34.99,
@@ -179,7 +179,7 @@
   },
 
   {
-    "id": "c6",
+    "id": "e3b7d2b6-19d2-4b11-8c87-0c1a6d5fbe16",
     "title": "Clean Code Principles",
     "description": "Write readable, maintainable, and professional-quality code.",
     "price": 29.99,
@@ -214,7 +214,7 @@
   },
 
   {
-    "id": "c7",
+    "id": "e3b7d2b6-19d2-4b11-8c87-0c1a6d5fbe17",
     "title": "DevOps Basics",
     "description": "Introduction to DevOps tools, CI/CD, and cloud fundamentals.",
     "price": 44.99,
@@ -249,7 +249,7 @@
   },
 
   {
-    "id": "c8",
+    "id": "e3b7d2b6-19d2-4b11-8c87-0c1a6d5fbe18",
     "title": "System Design for Developers",
     "description": "Learn how to design scalable and reliable systems.",
     "price": 89.99,
@@ -284,7 +284,7 @@
   },
 
   {
-    "id": "c9",
+    "id": "e3b7d2b6-19d2-4b11-8c87-0c1a6d5fbe19",
     "title": "Git & Version Control",
     "description": "Master Git workflows used in professional teams.",
     "price": 19.99,
@@ -319,7 +319,7 @@
   },
 
   {
-    "id": "c10",
+    "id": "e3b7d2b6-19d2-4b11-8c87-0c1a6d5fbe20",
     "title": "Algorithms & Data Structures",
     "description": "Improve problem-solving skills with classic algorithms.",
     "price": 69.99,
