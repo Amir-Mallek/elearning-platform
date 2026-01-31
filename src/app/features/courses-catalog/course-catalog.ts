@@ -31,7 +31,14 @@ export class CourseCatalogComponent {
     });
   }
 
+  //Filters
   filteredCourses = computed(() => {
+    
+    return this.courses();
+  });
+
+  //Search
+  searchedCourses = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     const all = this.courses();
 
@@ -45,7 +52,7 @@ export class CourseCatalogComponent {
 
   //Pagination
   totalPages = computed(() => {
-    const total = this.filteredCourses().length;
+    const total = this.searchedCourses().length;
     const size = this.pageSize();
     return Math.max(1, Math.ceil(total / size));
   });
@@ -53,7 +60,7 @@ export class CourseCatalogComponent {
   pagedCourses = computed(() => {
     const p = this.page();
     const size = this.pageSize();
-    const list = this.filteredCourses();
+    const list = this.searchedCourses();
 
     const start = (p - 1) * size;
     return list.slice(start, start + size);
