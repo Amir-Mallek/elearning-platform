@@ -80,16 +80,12 @@ export class CourseDetailComponent {
         this.isLoading.set(true);
         this.error.set(null);
         console.log("Loading course with id:", id);
-        return this.courseService.getCourseDetails(id).pipe(
-          catchError(err => {
-            console.error('Error loading course:', err);
-            return of(null);
-          })
-        );
+        return this.courseService.getCourseDetails(id)
       }),
-      takeUntilDestroyed() // ✅ Auto cleanup when component destroys
+      takeUntilDestroyed()
     ).subscribe({
       next: (courseData) => {
+
         this.course.set(courseData);
         this.isLoading.set(false);
       },
@@ -110,6 +106,7 @@ export class CourseDetailComponent {
   }
 
   submitReview(): void {
+    console.log("submitReview called");
     const rating = this.selectedRating();
     const comment = this.reviewComment();
 
@@ -126,6 +123,7 @@ export class CourseDetailComponent {
     };
     this.courseService.addReview(this.course()?.id, newReview).subscribe({
       next: (updatedCourse) => {
+        console.log("updatedCourse", updatedCourse);
         this.course.set(updatedCourse);  // ✅ Bridge: Observable → Signal
 
         // Reset form
@@ -167,7 +165,7 @@ export class CourseDetailComponent {
   handleEnrollment(): void {
     if (this.isEnrolled()) {
       console.log("Navigating to course content...");
-      this.router.navigate(['learning'])
+      this.router.navigate(['learn'], { relativeTo: this.route });
     } else {
       console.log("Processing enrollment...");
       this.enrollmentService.enrollInCourse("userId", this.course()?.id).subscribe({

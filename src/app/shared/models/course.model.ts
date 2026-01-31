@@ -6,7 +6,8 @@ export interface Course {
   id: string;
   title: string;
   description: string;
-  instructorId: string;
+
+  instructorId?: string;
   price: number;
   rating: number;
   level: CourseLevel;

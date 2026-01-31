@@ -12,8 +12,19 @@ import { CourseItemType } from '@enums/course-item-type.enum';
   providedIn: 'root',
 })
 export class CourseService {
-  // ✅ This is your single source of truth - all changes happen here
-  private courses: Course[] = [...(mockCourses as Course[])];
+  private readonly STORAGE_KEY = 'courses_data';
+
+  private loadCourses(): Course[] {
+    const stored = localStorage.getItem(this.STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [...(mockCourses as Course[])];
+  }
+
+  private saveCourses(): void {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.courses));
+  }
+
+
+  private courses: Course[] = this.loadCourses();
   private courseItems: CourseItem[] = [...(mockCourseItems as CourseItem[])];
 
   getCourses(): Course[] {
@@ -64,31 +75,34 @@ export class CourseService {
       ...this.courses[courseIndex],
       ...updatedData,
     };
+    this.saveCourses();
+
 
     return of(this.courses[courseIndex]).pipe(delay(300));
   }
-
   addReview(courseId: string | undefined, review: Review): Observable<Course> {
     if (!courseId) {
       return throwError(() => new Error('Course ID is required'));
     }
 
-    const courseIndex = this.courses.findIndex((c) => c.id === courseId);
-
+    const courseIndex = this.courses.findIndex(c => c.id === courseId);
     if (courseIndex === -1) {
       return throwError(() => new Error(`Course with ID ${courseId} not found`));
     }
 
     const course = this.courses[courseIndex];
+    const reviewindex = course.reviews.findIndex(r => r.userId === review.userId);
+    if (reviewindex !== -1) {
+      course.reviews.splice(reviewindex, 1);
+    }
+    const updatedReviews: Review[] = [
+      review,
+      ...(course.reviews ?? []),
+    ];
 
-    // Add review to the beginning of reviews array
-    const updatedReviews = [review, ...course.reviews];
-
-    // Recalculate rating
     const totalRating = updatedReviews.reduce((sum, r) => sum + r.rating, 0);
     const averageRating = Number((totalRating / updatedReviews.length).toFixed(2));
 
-    // Update course immutably
     this.courses[courseIndex] = {
       ...course,
       reviews: updatedReviews,
@@ -96,8 +110,11 @@ export class CourseService {
       totalReviews: updatedReviews.length,
     };
 
+    this.saveCourses();
+
     return of(this.courses[courseIndex]).pipe(delay(300));
   }
+
 
   updateEnrollment(courseId: string, isEnrolled: boolean): Observable<Course> {
     const courseIndex = this.courses.findIndex((c) => c.id === courseId);
@@ -121,9 +138,7 @@ export class CourseService {
     return of(this.courses[courseIndex]).pipe(delay(300));
   }
 
-  /**
-   * Toggle favorite status
-   */
+
   toggleFavorite(courseId: string, isFavorited: boolean): Observable<boolean> {
     // In a real app, this would save to backend
     // For now, just simulate the operation
