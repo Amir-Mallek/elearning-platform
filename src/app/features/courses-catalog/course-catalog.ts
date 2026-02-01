@@ -5,6 +5,23 @@ import { CourseService } from '@services/course.service';
 import { CourseCardComponent } from '@components/course-card/course-card';
 import { SearchBar } from '@components/search-bar/search-bar';
 
+
+type Level = 'beginner' | 'intermediate' | 'advanced';
+
+type PriceMode = 'all' | 'free' | 'paid';
+
+type DurationRange = 'all' | '0-2' | '2-6' | '6-12' | '12+';
+
+type RatingMin = "all" | "1" | "2" | "3" | "4" | "4.5";
+
+type CourseFilters = {
+  category: string | 'all';
+  level: Level | 'all';
+  priceMode: PriceMode;
+  duration: DurationRange;
+  minRating: RatingMin;
+};
+
 @Component({
   selector: 'app-course-catalog',
   standalone: true,
@@ -13,9 +30,13 @@ import { SearchBar } from '@components/search-bar/search-bar';
   styleUrls: ['./course-catalog.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
+
 export class CourseCatalogComponent {
 
   courses = signal<Course[]>([]);
+  levelsList: string[] = [];
+  categoriesList : string[] = [];
 
   view = signal<'grid' | 'list'>('grid');
   page = signal(1);
@@ -23,19 +44,100 @@ export class CourseCatalogComponent {
 
   searchQuery = signal('');
 
+
+
+
+  filters = signal<CourseFilters>({
+    category: 'all',
+    level: 'all',
+    priceMode: 'all',
+    duration: 'all',
+    minRating: "all",
+  });
+
+
   constructor(private courseService: CourseService) {
     this.courses.set(this.courseService.getCourses());
+    this.levelsList = this.courseService.getAllLevels();
+    this.categoriesList = this.courseService.getAllCategories();
+
     effect(() => {
       this.searchQuery();
+      this.filters();
       this.page.set(1);
     });
   }
 
-  //Filters
+  calculateDurationRange(hours: number): DurationRange {
+    if (hours <= 2) return '0-2';
+    if (hours <= 6) return '2-6';
+    if (hours <= 12) return '6-12';
+    return '12+';
+  }
+
+  setMinRating(value: string) {
+    this.filters.update(f => ({
+      ...f,
+      minRating: (value) as RatingMin,
+    }));
+  }
+
+  setDurationRange(value: string) {
+    this.filters.update(f => ({
+      ...f,
+      duration: value as DurationRange,
+    }));
+  }
+  setPriceMode(value: string) {
+    this.filters.update(f => ({
+      ...f,
+      priceMode: value as PriceMode,
+    }));
+  }
+  setCategory(value: string) {
+    this.filters.update(f => ({
+      ...f,
+      category: value,
+    }));
+  }
+  setLevel(value: string) {
+    this.filters.update(f => ({
+      ...f,
+      level: value as Level | 'all',
+    }));
+  }
+
+
+  //Filtering
   filteredCourses = computed(() => {
-    
-    return this.courses();
+    const list = this.searchedCourses();
+    const f = this.filters();
+
+    return list.filter(course => {
+      const price = course.price;
+      const hours = course.durationInSeconds / 3600;
+      const rating = course.rating.toString();
+      const category = course.category.toLowerCase().trim();
+      const level = course.level.toLowerCase().trim();
+
+      const okCategory = f.category === 'all' ? true : category === f.category;
+      const okLevel = f.level === 'all' ? true : (level === 'all_levels' ? true : level === f.level);
+      const okPrice = (f.priceMode === 'all') ? true : (f.priceMode === 'free' ? price === 0 : price > 0);
+      const okDuration = f.duration === 'all' ? true : (f.duration === this.calculateDurationRange(hours));
+      const okRating = f.minRating === "all" ? true : Number(rating) >= Number(f.minRating);
+
+      return okCategory && okLevel && okPrice && okDuration && okRating;
+    });
   });
+
+  showFilterPannel(){
+    const filterPannel = document.getElementById('filter-pannel');
+    if (filterPannel) {
+      filterPannel.classList.toggle('hidden');
+    }
+  }
+
+
 
   //Search
   searchedCourses = computed(() => {
@@ -52,7 +154,7 @@ export class CourseCatalogComponent {
 
   //Pagination
   totalPages = computed(() => {
-    const total = this.searchedCourses().length;
+    const total = this.filteredCourses().length;
     const size = this.pageSize();
     return Math.max(1, Math.ceil(total / size));
   });
@@ -60,7 +162,7 @@ export class CourseCatalogComponent {
   pagedCourses = computed(() => {
     const p = this.page();
     const size = this.pageSize();
-    const list = this.searchedCourses();
+    const list = this.filteredCourses();
 
     const start = (p - 1) * size;
     return list.slice(start, start + size);

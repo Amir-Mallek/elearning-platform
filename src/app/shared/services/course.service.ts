@@ -28,16 +28,13 @@ export class CourseService {
   private courseItems: CourseItem[] = [...(mockCourseItems as CourseItem[])];
 
   getCourses(): Course[] {
-    return this.courses; // ✅ Changed from mockCourses
+    return this.courses;
   }
 
   getCourseItems(courseId: string): Observable<CourseItem[]> {
     return of(mockCourseItems as CourseItem[]);
   }
 
-  /**
-   * Get a specific lesson by ID
-   */
   getLessonById(lessonId: string): Observable<Lesson | null> {
     const item = this.courseItems.find(
       (item) => item.id === lessonId && item.type === CourseItemType.LESSON,
@@ -53,7 +50,7 @@ export class CourseService {
   getCourseDetails(courseId: string): Observable<Course> {
     console.log('Getting course details for:', courseId);
 
-    const course = this.courses.find((c) => c.id === courseId); // ✅ Changed from mockCourses
+    const course = this.courses.find((c) => c.id === courseId);
     console.log(course);
 
     if (!course) {
@@ -63,6 +60,16 @@ export class CourseService {
     return of(course).pipe(delay(500));
   }
 
+  getAllCategories(): string[] {
+    const categories = Array.from(new Set(this.courses.map((course) => course.category)));
+    return categories;
+  }
+
+  getAllLevels(): string[] {
+    const levels = Array.from(new Set(this.courses.filter(course => course.level !== "ALL_LEVELS").map((course) => course.level)));
+    return levels;
+  }
+
   updateCourseDetails(courseId: string, updatedData: Partial<Course>): Observable<Course> {
     const courseIndex = this.courses.findIndex((c) => c.id === courseId);
 
@@ -70,7 +77,7 @@ export class CourseService {
       return throwError(() => new Error(`Course with ID ${courseId} not found`));
     }
 
-    // Immutable update - create new object
+   
     this.courses[courseIndex] = {
       ...this.courses[courseIndex],
       ...updatedData,

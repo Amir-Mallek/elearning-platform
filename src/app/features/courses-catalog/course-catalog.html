@@ -8,46 +8,150 @@
   </div>
 
   <div class="max-w-6xl mx-auto px-4 py-6">
-    <div
-      class="bg-background rounded-xl shadow-sm border border-border flex flex-col min-h-[450px]"
-    >
-      <!-- Toolbar -->
+    <div class="bg-background rounded-xl shadow-sm border border-border flex flex-col min-h-[450px]">
+      <!-- Upper Bar -->
       <div class="px-4 pt-4 pb-3 border-b border-border flex items-center justify-between">
-        <!-- search / filters ... -->
-        <div class="flex items-center gap-3">
-          
-          <app-search-bar 
-            [value]="searchQuery()" 
-            (valueChange)="searchQuery.set($event)">
-          </app-search-bar>
-          
-          <div>Filters</div>
+        <!-- Toolbar -->
+        <div class="px-4 pt-4 pb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+          <!-- Search -->
+          <div class="w-full sm:max-w-md">
+            <app-search-bar [value]="searchQuery()" (valueChange)="searchQuery.set($event)">
+            </app-search-bar>
+          </div>
+
+          <!-- Filters dropdown -->
+          <div class="relative flex items-center justify-end">
+            <!-- Filters button -->
+            <button type="button"
+              class="inline-flex items-center gap-2 border border-border bg-white rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50"
+              (click)="showFilterPannel()" aria-haspopup="true" aria-expanded="false">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-filter"
+                viewBox="0 0 16 16">
+                <path
+                  d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
+              </svg>
+              Filters
+            </button>
+
+            <!-- Filter panel -->
+            <div id="filter-pannel"
+              class="hidden absolute right-0 top-full mt-2 w-[320px] sm:w-[520px] bg-white border border-border rounded-xl shadow-lg p-4 z-10"
+              role="menu">
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <div>
+                  <p class="text-sm font-semibold text-foreground">Filters</p>
+                  <p class="text-xs text-gray-500">Refine courses by category, level, price, duration, and rating.</p>
+                </div>
+
+                <!-- Close button -->
+                <button type="button" class="text-gray-400 hover:text-gray-600 text-xl leading-none"
+                  (click)="showFilterPannel()" aria-label="Close">
+                  ×
+                </button>
+              </div>
+
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Category Filter -->
+                <div class="flex flex-col gap-1">
+                  <label class="text-xs font-medium text-gray-600">Category</label>
+                  <select class="border border-border rounded-lg px-3 py-2 text-sm bg-white"
+                    [value]="filters().category" (change)="setCategory($any($event.target).value)">
+                    <option value="all">All categories</option>
+                    @for (item of categoriesList; track item) {
+                    <option [value]="item.toLowerCase()">{{ item | titlecase }}</option>
+                    }
+                  </select>
+                </div>
+
+                <!-- Level Filter -->
+                <div class="flex flex-col gap-1">
+                  <label class="text-xs font-medium text-gray-600">Level</label>
+                  <select class="border border-border rounded-lg px-3 py-2 text-sm bg-white" [value]="filters().level"
+                    (change)="setLevel($any($event.target).value)">
+                    <option value="all">All levels</option>
+                    @for (item of levelsList; track item) {
+                    <option [value]="item.toLowerCase()">{{ item | titlecase }}</option>
+                    }
+                  </select>
+                </div>
+
+                <!-- Price Filter -->
+                <div class="flex flex-col gap-1">
+                  <label class="text-xs font-medium text-gray-600">Price</label>
+                  <select class="border border-border rounded-lg px-3 py-2 text-sm bg-white"
+                    [value]="filters().priceMode" (change)="setPriceMode($any($event.target).value)">
+                    <option value="all">All prices</option>
+                    <option value="free">Free</option>
+                    <option value="paid">Paid</option>
+                  </select>
+                </div>
+
+                <!-- Duration Filter -->
+                <div class="flex flex-col gap-1">
+                  <label class="text-xs font-medium text-gray-600">Duration</label>
+                  <select class="border border-border rounded-lg px-3 py-2 text-sm bg-white"
+                    [value]="filters().duration" (change)="setDurationRange($any($event.target).value)">
+                    <option value="all">Any duration</option>
+                    <option value="0-2">0–2h</option>
+                    <option value="2-6">2–6h</option>
+                    <option value="6-12">6–12h</option>
+                    <option value="12+">12h+</option>
+                  </select>
+                </div>
+
+                <!-- Min rating Filter -->
+                <div class="flex flex-col gap-1 sm:col-span-2">
+                  <label class="text-xs font-medium text-gray-600">Minimum rating</label>
+                  <select class="border border-border rounded-lg px-3 py-2 text-sm bg-white w-full"
+                    [value]="filters().minRating" (change)="setMinRating($any($event.target).value)">
+                    <option value="all">Any rating</option>
+                    <option value="3">3+</option>
+                    <option value="4">4+</option>
+                    <option value="4.5">4.5+</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Clear Filters -->
+              <div class="mt-4 flex items-center justify-end gap-2">
+                <button type="button"
+                  class="border border-border rounded-lg px-3 py-2 text-sm bg-white hover:bg-gray-50"
+                  (click)="filters.set({ category: 'all', level: 'all', priceMode: 'all', duration: 'all', minRating: 'all' })">
+                  Clear
+                </button>
+
+                <!-- Done button -->
+                <button type="button"
+                  class="rounded-lg px-3 py-2 text-sm font-medium bg-gray-900 text-white hover:bg-gray-800"
+                  (click)="showFilterPannel()">
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- view toggle -->
+
+        <!-- View toggle -->
         <div class="btn-toggle-group">
-          <button
-            (click)="view.set('grid')"
-            class="btn-toggle"
-            [ngClass]="view() === 'grid' ? 'btn-toggle--active' : 'btn-toggle--inactive'"
-          >
-          @if(view() === 'grid') {
+          <button (click)="view.set('grid')" class="btn-toggle"
+            [ngClass]="view() === 'grid' ? 'btn-toggle--active' : 'btn-toggle--inactive'">
+            @if(view() === 'grid') {
             <img src="assets/icons/grid-icon-active.svg" alt="Grid" class="w-4 h-4" />
-          } @else {
+            } @else {
             <img src="assets/icons/grid-icon-inactive.svg" alt="Grid" class="w-4 h-4" />
-          }
+            }
           </button>
 
-          <button
-            (click)="view.set('list')"
-            class="btn-toggle"
-            [ngClass]="view() === 'list' ? 'btn-toggle--active' : 'btn-toggle--inactive'"
-          >
-          @if(view() === 'list') {
+          <button (click)="view.set('list')" class="btn-toggle"
+            [ngClass]="view() === 'list' ? 'btn-toggle--active' : 'btn-toggle--inactive'">
+            @if(view() === 'list') {
             <img src="assets/icons/list-icon-active.svg" alt="List" class="w-4 h-4" />
-          } @else {
+            } @else {
             <img src="assets/icons/list-icon-inactive.svg" alt="List" class="w-4 h-4" />
-          }
+            }
           </button>
         </div>
       </div>
@@ -55,72 +159,49 @@
       <!-- Courses area -->
       <div class="flex-1 overflow-y-hidden overflow-x-auto px-4 py-4">
         @if (view() === 'grid') {
-          <section class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            @for (course of pagedCourses(); track course.id) {
-              <app-course-card [course]="course" viewMode="grid"></app-course-card>
-            }
-          </section>
+        <section class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          @for (course of pagedCourses(); track course.id) {
+          <app-course-card [course]="course" viewMode="grid"></app-course-card>
+          }
+        </section>
         }
         @if (view() === 'list') {
-          <section class="space-y-4">
-            @for (course of pagedCourses(); track course.id) {
-              <app-course-card [course]="course" viewMode="list"></app-course-card>
-            }
-          </section>
+        <section class="space-y-4">
+          @for (course of pagedCourses(); track course.id) {
+          <app-course-card [course]="course" viewMode="list"></app-course-card>
+          }
+        </section>
         }
       </div>
 
       <!-- Pagination bar  -->
       @if (totalPages() > 1) {
-        <nav
-          class="px-4 py-3 border-t border-border flex items-center justify-center gap-1"
-          aria-label="Pagination"
-        >
-          <button
-            (click)="goToPage(1)"
-            [disabled]="page() === 1"
-            class="btn-small"
-            [ngClass]="page() === 1 ? 'btn-small--inactive' : 'btn-small--active'"
-          >
-            «
-          </button>
-          <button
-            (click)="goToPage(page() - 1)"
-            [disabled]="page() === 1"
-            class="btn-small"
-            [ngClass]="page() === 1 ? 'btn-small--inactive' : 'btn-small--active'"
-          >
-            Prev
-          </button>
+      <nav class="px-4 py-3 border-t border-border flex items-center justify-center gap-1" aria-label="Pagination">
+        <button (click)="goToPage(1)" [disabled]="page() === 1" class="btn-small"
+          [ngClass]="page() === 1 ? 'btn-small--inactive' : 'btn-small--active'">
+          «
+        </button>
+        <button (click)="goToPage(page() - 1)" [disabled]="page() === 1" class="btn-small"
+          [ngClass]="page() === 1 ? 'btn-small--inactive' : 'btn-small--active'">
+          Prev
+        </button>
 
-          @for (p of compactPages(); track p) {
-            <button
-              (click)="goToPage(p)"
-              class="btn-small"
-              [ngClass]="{ 'btn-small--inactive': p !== page() }"
-            >
-              {{ p }}
-            </button>
-          }
+        @for (p of compactPages(); track p) {
+        <button (click)="goToPage(p)" class="btn-small" [ngClass]="{ 'btn-small--inactive': p !== page() }">
+          {{ p }}
+        </button>
+        }
 
-          <button
-            (click)="goToPage(page() + 1)"
-            [disabled]="page() === totalPages()"
-            class="btn-small"
-            [ngClass]="page() === totalPages() ? 'btn-small--inactive' : 'btn-small--active'"
-          >
-            Next
-          </button>
+        <button (click)="goToPage(page() + 1)" [disabled]="page() === totalPages()" class="btn-small"
+          [ngClass]="page() === totalPages() ? 'btn-small--inactive' : 'btn-small--active'">
+          Next
+        </button>
 
-          <button
-            (click)="goToPage(totalPages())"
-            [disabled]="page() === totalPages()"
-            class="btn-small"
-            [ngClass]="page() === totalPages() ? 'btn-small--inactive' : 'btn-small--active'"
-          >
-            »
-          </button>
-        </nav>
+        <button (click)="goToPage(totalPages())" [disabled]="page() === totalPages()" class="btn-small"
+          [ngClass]="page() === totalPages() ? 'btn-small--inactive' : 'btn-small--active'">
+          »
+        </button>
+      </nav>
       }
     </div>
   </div>
