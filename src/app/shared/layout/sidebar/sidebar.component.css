@@ -1,6 +1,5 @@
 .app-sidebar {
   width: 220px;
-  background: #f8fafc;
   padding: 24px 16px;
   border-right: 1px solid #e2e8f0;
   min-height: calc(100vh - 120px);
