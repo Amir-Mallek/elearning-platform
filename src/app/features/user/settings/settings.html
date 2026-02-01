@@ -1,0 +1,22 @@
+<section class="form-card">
+  <h1>User settings</h1>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      Preferences
+      <select formControlName="preferences">
+        <option value="default">Default</option>
+        <option value="compact">Compact layout</option>
+        <option value="focus">Focus mode</option>
+      </select>
+    </label>
+
+    <label class="toggle">
+      <input type="checkbox" formControlName="notificationsEnabled" />
+      Notifications enabled
+    </label>
+
+    <button type="submit">Save settings</button>
+  </form>
+</section>
+

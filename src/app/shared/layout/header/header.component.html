@@ -1,0 +1,17 @@
+<header class="app-header">
+  <div class="brand">
+    <a routerLink="/dashboard">E-Learning</a>
+  </div>
+
+  <nav class="header-nav">
+    <a routerLink="/courses">Courses</a>
+    <a routerLink="/profile" *ngIf="authService.user()">Profile</a>
+    <a routerLink="/settings" *ngIf="authService.user()">Settings</a>
+  </nav>
+
+  <div class="user-menu" *ngIf="authService.user() as user">
+    <span class="user-name">{{ user.name }}</span>
+    <button type="button" (click)="logout()">Logout</button>
+  </div>
+</header>
+

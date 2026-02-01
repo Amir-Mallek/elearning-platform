@@ -1,0 +1,11 @@
+<div class="toast-stack">
+  <div
+    class="toast-item"
+    *ngFor="let toast of toastService.toasts()"
+    [ngClass]="toast.type"
+  >
+    <span>{{ toast.message }}</span>
+    <button type="button" (click)="toastService.remove(toast.id)">×</button>
+  </div>
+</div>
+
