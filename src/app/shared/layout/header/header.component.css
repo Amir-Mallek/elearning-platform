@@ -1,0 +1,46 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.brand a {
+  color: #ffffff;
+  font-size: 20px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.header-nav {
+  display: flex;
+  gap: 16px;
+}
+
+.header-nav a {
+  color: #cbd5f5;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-name {
+  font-weight: 600;
+}
+
+.user-menu button {
+  border: 1px solid #cbd5f5;
+  background: transparent;
+  color: #cbd5f5;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+

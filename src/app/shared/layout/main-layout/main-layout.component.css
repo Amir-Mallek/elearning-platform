@@ -1,0 +1,56 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+  overflow-x: hidden;
+}
+
+.app-body {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  width: 100%;
+}
+
+.app-content {
+  flex: 1;
+  padding: 24px;
+  min-width: 0;
+  width: 100%;
+}
+
+.pref-compact .app-content {
+  padding: 16px;
+  overflow-x: hidden;
+}
+
+.pref-compact app-sidebar {
+  flex: 0 0 180px;
+}
+
+.pref-compact .app-body {
+  overflow-x: hidden;
+}
+
+.pref-compact .app-content > * {
+  max-width: 100%;
+}
+
+.pref-compact app-sidebar .app-sidebar {
+  width: 100%;
+}
+
+.pref-focus .app-body {
+  justify-content: center;
+}
+
+.pref-focus app-sidebar {
+  display: none;
+}
+
+.pref-focus .app-content {
+  max-width: 900px;
+  padding: 32px;
+}
+

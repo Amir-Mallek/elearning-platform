@@ -1,0 +1,53 @@
+<div class="auth-page">
+  <form class="auth-card" [formGroup]="form" (ngSubmit)="submit()">
+    <h1 class="auth-title">Create account</h1>
+    <p class="auth-subtitle">Join the platform and start learning today.</p>
+
+    <label class="auth-label">
+      Full name
+      <input class="auth-input" type="text" formControlName="name" placeholder="Jane Doe" />
+    </label>
+    @if (form.get('name')?.touched && form.get('name')?.invalid) {
+      <p class="auth-error">Name must be at least 2 characters.</p>
+    }
+
+    <label class="auth-label">
+      Email
+      <input class="auth-input" type="email" formControlName="email" placeholder="you@example.com" />
+    </label>
+    @if (form.get('email')?.touched && form.get('email')?.invalid) {
+      <p class="auth-error">Enter a valid email address.</p>
+    }
+
+    <label class="auth-label">
+      Password
+      <input class="auth-input" type="password" formControlName="password" placeholder="••••••••" />
+    </label>
+    @if (form.get('password')?.touched && form.get('password')?.invalid) {
+      <p class="auth-error">Password must be at least 6 characters.</p>
+    }
+
+    <label class="auth-label">
+      Confirm password
+      <input
+        class="auth-input"
+        type="password"
+        formControlName="confirmPassword"
+        placeholder="••••••••"
+      />
+    </label>
+    @if (form.get('confirmPassword')?.touched && form.value.password !== form.value.confirmPassword) {
+      <p class="auth-error">Passwords do not match.</p>
+    }
+
+    <button class="auth-button" type="submit" [disabled]="isSubmitting">
+      {{ isSubmitting ? 'Creating account...' : 'Register' }}
+    </button>
+
+    <p class="auth-footer">
+      Already have an account?
+      <a routerLink="/login">Login</a>
+    </p>
+  </form>
+</div>
+

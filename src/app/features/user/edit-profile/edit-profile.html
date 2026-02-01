@@ -1,0 +1,29 @@
+<section class="form-card">
+  <h1>Edit profile</h1>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      Name
+      <input type="text" formControlName="name" />
+    </label>
+    <p class="error" *ngIf="form.get('name')?.touched && form.get('name')?.invalid">
+      Name must be at least 2 characters.
+    </p>
+
+    <label>
+      Email
+      <input type="email" formControlName="email" />
+    </label>
+    <p class="error" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+      Enter a valid email address.
+    </p>
+
+    <label>
+      Avatar URL
+      <input type="url" formControlName="avatarUrl" />
+    </label>
+
+    <button type="submit">Save changes</button>
+  </form>
+</section>
+
