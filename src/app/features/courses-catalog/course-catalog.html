@@ -154,6 +154,8 @@
         <section class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           @for (course of pagedCourses(); track course.id) {
           <app-course-card [course]="course" viewMode="grid"></app-course-card>
+          }@empty {
+          <p class="text-center font-medium text-gray-500 col-span-full">No courses found</p>
           }
         </section>
         }
@@ -161,6 +163,9 @@
         <section class="space-y-4">
           @for (course of pagedCourses(); track course.id) {
           <app-course-card [course]="course" viewMode="list"></app-course-card>
+          }
+          @empty {
+          <p class="text-center font-medium text-gray-500">No courses found</p>
           }
         </section>
         }
