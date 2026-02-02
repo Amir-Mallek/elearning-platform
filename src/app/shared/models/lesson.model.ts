@@ -5,6 +5,6 @@ export interface Lesson extends CourseItem {
   title: string;
   duration: number;
   text: string;
-  isPreview: boolean;
-  isFree: boolean;
+  isPreview?: boolean;
+  isFree?: boolean;
 }

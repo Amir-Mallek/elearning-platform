@@ -77,7 +77,7 @@ export class CourseService {
       return throwError(() => new Error(`Course with ID ${courseId} not found`));
     }
 
-   
+
     this.courses[courseIndex] = {
       ...this.courses[courseIndex],
       ...updatedData,
@@ -158,7 +158,7 @@ export class CourseService {
    * Useful for testing or resetting the app
    */
   resetCourses(): void {
-    this.courses = [...(mockCourses as Course[])];
+    this.courses = [...(mockCourses as unknown as Course[])];
     console.log('Courses reset to original mock data');
   }
 }
