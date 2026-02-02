@@ -30,7 +30,25 @@
       "studentsCount": 18000,
       "rating": 4.7
     },
-    "modules": [],
+    "modules": [{
+      "id": "lesson-1",
+      "courseId": "course-1",
+      "order": 1,
+      "type": "LESSON",
+      "title": "Introduction to the Course",
+      "duration": 10,
+      "text": "Welcome! In this lesson we will cover the course objectives."
+    },
+      {
+        "id": "lesson-2",
+        "courseId": "course-1",
+        "order": 2,
+        "type": "LESSON",
+        "title": "Core Concepts",
+        "duration": 25,
+        "text": "This lesson explains the core concepts you need to know."
+      }
+    ],
     "reviews": [],
     "totalReviews": 1240
   },
@@ -66,7 +84,25 @@
       "studentsCount": 12000,
       "rating": 4.9
     },
-    "modules": [],
+    "modules": [{
+      "id": "lesson-1",
+      "courseId": "course-1",
+      "order": 1,
+      "type": "LESSON",
+      "title": "Introduction to the Course",
+      "duration": 10,
+      "text": "Welcome! In this lesson we will cover the course objectives."
+    },
+      {
+        "id": "lesson-2",
+        "courseId": "course-1",
+        "order": 2,
+        "type": "LESSON",
+        "title": "Core Concepts",
+        "duration": 25,
+        "text": "This lesson explains the core concepts you need to know."
+      }
+    ],
     "reviews": [],
     "totalReviews": 860
   },
@@ -102,7 +138,25 @@
       "studentsCount": 9500,
       "rating": 4.6
     },
-    "modules": [],
+    "modules": [{
+      "id": "lesson-1",
+      "courseId": "course-1",
+      "order": 1,
+      "type": "LESSON",
+      "title": "Introduction to the Course",
+      "duration": 10,
+      "text": "Welcome! In this lesson we will cover the course objectives."
+    },
+      {
+        "id": "lesson-2",
+        "courseId": "course-1",
+        "order": 2,
+        "type": "LESSON",
+        "title": "Core Concepts",
+        "duration": 25,
+        "text": "This lesson explains the core concepts you need to know."
+      }
+    ],
     "reviews": [],
     "totalReviews": 640
   },
@@ -138,7 +192,25 @@
       "studentsCount": 14000,
       "rating": 4.5
     },
-    "modules": [],
+    "modules": [{
+      "id": "lesson-1",
+      "courseId": "course-1",
+      "order": 1,
+      "type": "LESSON",
+      "title": "Introduction to the Course",
+      "duration": 10,
+      "text": "Welcome! In this lesson we will cover the course objectives."
+    },
+      {
+        "id": "lesson-2",
+        "courseId": "course-1",
+        "order": 2,
+        "type": "LESSON",
+        "title": "Core Concepts",
+        "duration": 25,
+        "text": "This lesson explains the core concepts you need to know."
+      }
+    ],
     "reviews": [],
     "totalReviews": 980
   },
@@ -173,7 +245,25 @@
       "studentsCount": 21000,
       "rating": 4.4
     },
-    "modules": [],
+    "modules": [{
+      "id": "lesson-1",
+      "courseId": "course-1",
+      "order": 1,
+      "type": "LESSON",
+      "title": "Introduction to the Course",
+      "duration": 10,
+      "text": "Welcome! In this lesson we will cover the course objectives."
+    },
+      {
+        "id": "lesson-2",
+        "courseId": "course-1",
+        "order": 2,
+        "type": "LESSON",
+        "title": "Core Concepts",
+        "duration": 25,
+        "text": "This lesson explains the core concepts you need to know."
+      }
+    ],
     "reviews": [],
     "totalReviews": 1100
   },
@@ -208,7 +298,25 @@
       "studentsCount": 30000,
       "rating": 4.8
     },
-    "modules": [],
+    "modules": [{
+      "id": "lesson-1",
+      "courseId": "course-1",
+      "order": 1,
+      "type": "LESSON",
+      "title": "Introduction to the Course",
+      "duration": 10,
+      "text": "Welcome! In this lesson we will cover the course objectives."
+    },
+      {
+        "id": "lesson-2",
+        "courseId": "course-1",
+        "order": 2,
+        "type": "LESSON",
+        "title": "Core Concepts",
+        "duration": 25,
+        "text": "This lesson explains the core concepts you need to know."
+      }
+    ],
     "reviews": [],
     "totalReviews": 2100
   },
@@ -567,7 +675,7 @@
     "reviews": [],
     "totalReviews": 480
   },
-  
+
   {
     "id": "e3b7d2b6-19d2-4b11-8c87-0c1a6d5fbe26",
     "title": "Kubernetes for Developers",

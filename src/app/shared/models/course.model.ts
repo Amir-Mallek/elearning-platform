@@ -2,11 +2,12 @@ import { CourseLevel } from '../enums/course-level.enum';
 import { Instructor } from './instructor.model';
 import { Module } from './module.model';
 import { Review } from './review.model';
+import {Lesson} from '@models/lesson.model';
+import {CourseItem} from '@models/course-item.model';
 export interface Course {
   id: string;
   title: string;
   description: string;
-
   instructorId?: string;
   price: number;
   rating: number;
@@ -22,7 +23,7 @@ export interface Course {
   lastUpdated: string;
   learningObjectives: string[];
   prerequisites: string[];
-  modules: Module[];
+  modules: Lesson[];
   reviews: Review[];
   totalReviews: number;
 }

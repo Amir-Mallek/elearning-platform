@@ -155,19 +155,19 @@
                 class="w-full flex justify-between items-center p-8 hover:bg-muted/20 transition">
                 <span class="font-bold text-lg">{{ module.title }}</span>
                 <span class="text-sm text-muted-foreground">
-                  {{ module.lessons.length }} lessons
+                  {{ module.duration}} min
                 </span>
               </button>
 
-              <div *ngIf="isModuleExpanded(module.id)" class="bg-muted/20 px-8 pb-6">
-                <div *ngFor="let lesson of module.lessons"
-                     class="flex justify-between py-3 text-sm border-b border-border/20 last:border-none">
-                  <span>{{ lesson.title }}</span>
-                  <span class="text-muted-foreground">
-                    {{ lesson.duration | durationPipe }}
-                  </span>
-                </div>
-              </div>
+<!--              <div *ngIf="isModuleExpanded(module.id)" class="bg-muted/20 px-8 pb-6">-->
+<!--                <div *ngFor="let lesson of module"-->
+<!--                     class="flex justify-between py-3 text-sm border-b border-border/20 last:border-none">-->
+<!--                  <span>{{ lesson.title }}</span>-->
+<!--                  <span class="text-muted-foreground">-->
+<!--                    {{ lesson.duration | durationPipe }}-->
+<!--                  </span>-->
+<!--                </div>-->
+<!--              </div>-->
             </div>
           </div>
         </section>
