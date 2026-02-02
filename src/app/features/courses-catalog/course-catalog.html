@@ -127,24 +127,38 @@
 
 
         <!-- View toggle -->
-        <div class="btn-toggle-group">
-          <button (click)="view.set('grid')" class="btn-toggle"
-            [ngClass]="view() === 'grid' ? 'btn-toggle--active' : 'btn-toggle--inactive'">
-            @if(view() === 'grid') {
-            <img src="assets/icons/grid-icon-active.svg" alt="Grid" class="w-4 h-4" />
-            } @else {
-            <img src="assets/icons/grid-icon-inactive.svg" alt="Grid" class="w-4 h-4" />
-            }
-          </button>
+        <div class="flex items-center gap-3">
+          <!-- Page size selector -->
+          <div class="flex items-center gap-2">
+            <label for="pageSize" class="text-sm font-medium text-gray-600">Show:</label>
+            <select id="pageSize" [value]="pageSize()" (change)="setPageSize(+$any($event.target).value)"
+              class="border border-border bg-white rounded-lg px-3 py-2 text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+              <option value="4">4</option>
+              <option value="6">6</option>
+              <option value="12">12</option>
+              <option value="24">24</option>
+            </select>
+          </div>
 
-          <button (click)="view.set('list')" class="btn-toggle"
-            [ngClass]="view() === 'list' ? 'btn-toggle--active' : 'btn-toggle--inactive'">
-            @if(view() === 'list') {
-            <img src="assets/icons/list-icon-active.svg" alt="List" class="w-4 h-4" />
-            } @else {
-            <img src="assets/icons/list-icon-inactive.svg" alt="List" class="w-4 h-4" />
-            }
-          </button>
+          <div class="btn-toggle-group">
+            <button (click)="view.set('grid')" class="btn-toggle"
+              [ngClass]="view() === 'grid' ? 'btn-toggle--active' : 'btn-toggle--inactive'">
+              @if(view() === 'grid') {
+              <img src="assets/icons/grid-icon-active.svg" alt="Grid" class="w-4 h-4" />
+              } @else {
+              <img src="assets/icons/grid-icon-inactive.svg" alt="Grid" class="w-4 h-4" />
+              }
+            </button>
+
+            <button (click)="view.set('list')" class="btn-toggle"
+              [ngClass]="view() === 'list' ? 'btn-toggle--active' : 'btn-toggle--inactive'">
+              @if(view() === 'list') {
+              <img src="assets/icons/list-icon-active.svg" alt="List" class="w-4 h-4" />
+              } @else {
+              <img src="assets/icons/list-icon-inactive.svg" alt="List" class="w-4 h-4" />
+              }
+            </button>
+          </div>
         </div>
       </div>
 

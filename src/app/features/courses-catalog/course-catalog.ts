@@ -210,4 +210,10 @@ export class CourseCatalogComponent {
     if (page < 1 || page > this.totalPages()) return;
     this.page.set(page);
   }
+
+  setPageSize(size: number): void {
+    if(!size) return;
+    this.pageSize.set(size);
+    this.page.set(1); // Reset to first page when page size changes
+  }
 }
