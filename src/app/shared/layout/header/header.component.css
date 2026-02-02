@@ -5,6 +5,11 @@
   padding: 16px 24px;
   background: #0f172a;
   color: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
 }
 
 .brand a {

@@ -14,8 +14,10 @@
 }
 
 .app-content {
+  margin-left: 220px;
+  margin-top: 50px;
   flex: 1;
-  padding: 24px;
+  padding: 50px;
   min-width: 0;
   width: 100%;
 }
