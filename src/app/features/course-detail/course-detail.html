@@ -44,11 +44,11 @@
             </div>
 
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
-              👥 {{ formatUtils.formatNumber(course()?.enrolledCount ?? 0) }} students
+              👥 {{ course()?.enrolledCount ?? 0 | formatNumber }} students
             </div>
 
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
-              ⏱ {{ formatUtils.formatDuration(course()?.durationInSeconds ?? 0) }}
+              ⏱ {{ course()?.durationInSeconds ?? 0 | durationPipe }}
             </div>
 
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
@@ -101,7 +101,7 @@
 
               <div class="space-y-3 text-sm text-muted-foreground pt-6 border-t border-border/30">
                 <p>✔ {{ course()?.lessonsCount }} lessons</p>
-                <p>✔ {{ formatUtils.formatDuration(course()?.durationInSeconds ?? 0) }}</p>
+                <p>✔ {{ course()?.durationInSeconds ?? 0 | durationPipe }}</p>
                 <p>✔ {{ course()?.quizCount }} quizzes</p>
 <!--                <p>✔ Certificate included</p>-->
                 <p>✔ Lifetime access</p>
@@ -164,7 +164,7 @@
                      class="flex justify-between py-3 text-sm border-b border-border/20 last:border-none">
                   <span>{{ lesson.title }}</span>
                   <span class="text-muted-foreground">
-                    {{ formatUtils.formatDuration(lesson.duration) }}
+                    {{ lesson.duration | durationPipe }}
                   </span>
                 </div>
               </div>

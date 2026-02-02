@@ -3,13 +3,14 @@ import { Course } from '../../shared/models/course.model';
 import { NgClass, NgForOf, NgIf, NgOptimizedImage } from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import { CourseService } from '../../shared/services/course.service';
-import { FormatUtils } from '../../shared/utils/format.utils';
 import { FormsModule } from '@angular/forms';
 import { Review } from '../../shared/models/review.model';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {EnrollmentService} from '@services/enrollment.service';
+import {DurationPipe} from '@pipes/DurationPipe/duration.pipe';
+import {FormatNumberPipe} from '@pipes/formatNymberPipe/formatNumberPipe';
 
 @Component({
   selector: 'app-course-detail',
@@ -19,7 +20,9 @@ import {EnrollmentService} from '@services/enrollment.service';
     NgIf,
     NgClass,
     NgForOf,
-    FormsModule
+    FormsModule,
+    DurationPipe,
+    FormatNumberPipe
   ],
   styleUrls: ['./course-detail.css']
 })
@@ -30,12 +33,10 @@ export class CourseDetailComponent {
   private router = inject(Router);
 
 
-  // ===== SIGNALS: UI State =====
   course = signal<Course | null>(null);
   isLoading = signal(false);
   error = signal<string | null>(null);
 
-  // Convert these to signals too for consistency
   isEnrolled = signal(false);
   isFavorited = signal(false);
   expandedModules = signal<Set<string>>(new Set());
@@ -45,9 +46,7 @@ export class CourseDetailComponent {
   hoverRating = signal(0);
   reviewComment = signal('');
 
-  // ===== COMPUTED VALUES (auto-update when dependencies change) =====
 
-  // Calculate average rating from reviews
   averageRating = computed(() => {
     const c = this.course();
     if (!c || !c.reviews?.length) return 0;
@@ -56,22 +55,10 @@ export class CourseDetailComponent {
     return Number((sum / c.reviews.length).toFixed(2));
   });
 
-  // Total course duration
-  totalDuration = computed(() => {
-    const c = this.course();
-    if (!c) return 0;
-
-    return c.modules.reduce((total, module) => {
-      return total + module.lessons.reduce((sum, lesson) => sum + lesson.duration, 0);
-    }, 0);
-  });
-
-  // Reviews count
   reviewsCount = computed(() => {
     return this.course()?.reviews?.length ?? 0;
   });
 
-  formatUtils = FormatUtils;
 
   constructor() {
     this.route.params.pipe(
@@ -124,7 +111,7 @@ export class CourseDetailComponent {
     this.courseService.addReview(this.course()?.id, newReview).subscribe({
       next: (updatedCourse) => {
         console.log("updatedCourse", updatedCourse);
-        this.course.set(updatedCourse);  // ✅ Bridge: Observable → Signal
+        this.course.set(updatedCourse);
 
         // Reset form
         this.selectedRating.set(0);
@@ -137,8 +124,6 @@ export class CourseDetailComponent {
       }
     });
   }
-
-  // ===== MODULE EXPANSION =====
 
   toggleModule(moduleId: string): void {
     this.expandedModules.update(modules => {
@@ -156,11 +141,6 @@ export class CourseDetailComponent {
     return this.expandedModules().has(moduleId);
   }
 
-  // ===== COURSE ACTIONS =====
-
-  toggleFavorite(): void {
-    this.isFavorited.update(favorited => !favorited);
-  }
 
   handleEnrollment(): void {
     if (this.isEnrolled()) {
@@ -197,7 +177,6 @@ export class CourseDetailComponent {
       this.isEnrolled.set(true);
     }
   }
-
 
 
 
