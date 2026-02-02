@@ -3,6 +3,10 @@
   padding: 24px 16px;
   border-right: 1px solid #e2e8f0;
   min-height: calc(100vh - 120px);
+  position: sticky;
+  top: 0;
+  align-self: stretch;
+  overflow-y: auto;
 }
 
 .app-sidebar nav {

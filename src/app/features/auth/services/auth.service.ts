@@ -12,7 +12,7 @@ export class AuthService {
   private readonly tokenKey = 'elearning_auth_token';
   private readonly userKey = 'elearning_auth_user';
   private readonly passwordKey = 'elearning_auth_password';
-
+  private readonly usersKey = 'elearning_auth_users';
   private token = signal<string | null>(null);
   user = signal<User | null>(null);
 
@@ -23,23 +23,26 @@ export class AuthService {
   }
 
   login(email: string, password: string): AuthResult {
-    const storedPassword = localStorage.getItem(this.passwordKey);
-    const storedUser = this.getStoredUser();
+    const users = this.getUsers();
+    const key = email.toLowerCase();
+    const user = users[key];
+    const storedPassword = localStorage.getItem(this.getPasswordKey(email));
 
-    if (storedPassword && password !== storedPassword) {
+
+    if (!user || !storedPassword || storedPassword !== password) {
       return { success: false, message: 'Invalid email or password.' };
     }
 
-    const user = storedUser ?? this.createUserFromEmail(email);
     this.persistSession(user, password);
 
     return { success: true };
   }
 
   register(name: string, email: string, password: string): AuthResult {
-    const storedUser = this.getStoredUser();
+    const users = this.getUsers();
+    const key = email.toLowerCase();
 
-    if (storedUser && storedUser.email.toLowerCase() === email.toLowerCase()) {
+    if (users[key]) {
       return { success: false, message: 'An account with this email already exists.' };
     }
 
@@ -52,6 +55,10 @@ export class AuthService {
       preferences: 'default',
       notificationsEnabled: true,
     };
+
+    users[key] = user;
+    this.setUsers(users);
+    localStorage.setItem(this.getPasswordKey(email), password);
 
     this.persistSession(user, password);
     return { success: true };
@@ -69,6 +76,14 @@ export class AuthService {
       return { success: false, message: 'You are not logged in.' };
     }
 
+    const users = this.getUsers();
+    const currentKey = current.email.toLowerCase();
+    const nextKey = update.email.toLowerCase();
+
+    if (currentKey !== nextKey && users[nextKey] && users[nextKey].id !== current.id) {
+      return { success: false, message: 'Another account already uses this email.' };
+    }
+
     const updated: User = {
       ...current,
       name: update.name,
@@ -76,18 +91,34 @@ export class AuthService {
       avatarUrl: update.avatarUrl ?? current.avatarUrl,
     };
 
+    if (currentKey !== nextKey) {
+      const existingPassword = localStorage.getItem(this.getPasswordKey(current.email));
+      if (existingPassword) {
+        localStorage.setItem(this.getPasswordKey(update.email), existingPassword);
+        localStorage.removeItem(this.getPasswordKey(current.email));
+      }
+      delete users[currentKey];
+    }
+
+    users[nextKey] = updated;
+    this.setUsers(users);
     this.user.set(updated);
     localStorage.setItem(this.userKey, JSON.stringify(updated));
     return { success: true };
   }
 
   changePassword(currentPassword: string, newPassword: string): AuthResult {
-    const storedPassword = localStorage.getItem(this.passwordKey);
+    const current = this.user();
+    if (!current) {
+      return { success: false, message: 'You are not logged in.' };
+    }
+
+    const storedPassword = localStorage.getItem(this.getPasswordKey(current.email));
     if (!storedPassword || storedPassword !== currentPassword) {
       return { success: false, message: 'Current password is incorrect.' };
     }
 
-    localStorage.setItem(this.passwordKey, newPassword);
+    localStorage.setItem(this.getPasswordKey(current.email), newPassword);
     return { success: true };
   }
 
@@ -103,6 +134,9 @@ export class AuthService {
       notificationsEnabled: update.notificationsEnabled,
     };
 
+    const users = this.getUsers();
+    users[updated.email.toLowerCase()] = updated;
+    this.setUsers(users);
     this.user.set(updated);
     localStorage.setItem(this.userKey, JSON.stringify(updated));
     return { success: true };
@@ -118,7 +152,7 @@ export class AuthService {
     this.user.set(user);
     localStorage.setItem(this.tokenKey, token);
     localStorage.setItem(this.userKey, JSON.stringify(user));
-    localStorage.setItem(this.passwordKey, password);
+    localStorage.setItem(this.getPasswordKey(user.email), password);
   }
 
   private loadFromStorage(): void {
@@ -138,6 +172,40 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  private getUsers(): Record<string, User> {
+    const raw = localStorage.getItem(this.usersKey);
+    let users: Record<string, User> = {};
+    if (raw) {
+      try {
+        users = JSON.parse(raw) as Record<string, User>;
+      } catch {
+        users = {};
+      }
+    }
+
+    if (Object.keys(users).length === 0) {
+      const legacyUser = this.getStoredUser();
+      if (legacyUser) {
+        users[legacyUser.email.toLowerCase()] = legacyUser;
+        this.setUsers(users);
+        const legacyPassword = localStorage.getItem(this.passwordKey);
+        if (legacyPassword) {
+          localStorage.setItem(this.getPasswordKey(legacyUser.email), legacyPassword);
+        }
+      }
+    }
+
+    return users;
+  }
+
+  private setUsers(users: Record<string, User>): void {
+    localStorage.setItem(this.usersKey, JSON.stringify(users));
+  }
+
+  private getPasswordKey(email: string): string {
+    return `elearning_auth_password_${email.toLowerCase()}`;
   }
 
   private createUserFromEmail(email: string): User {
