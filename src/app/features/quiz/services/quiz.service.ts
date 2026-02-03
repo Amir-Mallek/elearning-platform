@@ -18,7 +18,7 @@ export class QuizService {
       id: '1',
       title: 'Angular Fundamentals Quiz',
       description: 'Test your knowledge of Angular basics',
-      timeLimit: 30, // 10 minutes
+      timeLimit: 30000,
       questions: [
         {
           id: 'q1',
