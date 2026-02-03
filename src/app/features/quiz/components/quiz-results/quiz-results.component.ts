@@ -192,7 +192,7 @@ export class QuizResultsComponent implements OnInit {
 
   ngOnInit(): void {
     // Get result from router state
-    const navigation = this.router.getCurrentNavigation();
+    const navigation = this.router.currentNavigation();
     const state = navigation?.extras.state as { result: QuizResult } | undefined;
 
     if (state?.result) {
