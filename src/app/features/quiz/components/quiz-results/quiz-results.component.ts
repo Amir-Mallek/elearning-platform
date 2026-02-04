@@ -172,12 +172,6 @@ import { QuizResult } from '../../models/quiz.model';
           >
             Back to Courses
           </a>
-          <button
-            (click)="retakeQuiz()"
-            class="px-6 py-3 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200"
-          >
-            Retake Quiz
-          </button>
         </div>
       </div>
     </div>
@@ -219,9 +213,5 @@ export class QuizResultsComponent implements OnInit {
       return 'bg-red-50 border border-red-200 text-red-800';
     }
     return 'bg-gray-50 text-gray-600';
-  }
-
-  retakeQuiz(): void {
-    this.router.navigate(['/quiz', this.quizId()]);
   }
 }

@@ -1,6 +1,3 @@
-// ============================================
-// dashboard.component.ts
-// ============================================
 import { Component, OnInit, OnDestroy, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -14,7 +11,7 @@ import { ActivityService } from './services/activity.service';
 
 // Components
 import { StatsCardComponent } from './components/stats-card/stats-card.component';
-import { CourseCardComponent } from './components/course-card/course-card.component'; // <-- fixed relative path
+import { CourseCardComponent } from './components/course-card/course-card.component';
 import { ActivityFeedComponent } from './components/activity-feed/activity-feed.component';
 import { CertificateCardComponent } from './components/certificate-card/certificate-card.component';
 import { CourseOverviewComponent } from './components/course-overview/course-overview.component';
